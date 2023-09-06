@@ -18,8 +18,8 @@ th3 = cv2.adaptiveThreshold(
 )
 
 # define the alpha and beta
-alpha = 1.3  # Contrast control
-beta = 20  # Brightness control 1.4 10
+alpha = 1.4  # Contrast control
+beta = 10  # Brightness control 1.4 10
 
 # call convertScaleAbs function
 adjusted = cv2.convertScaleAbs(img, alpha=alpha, beta=beta)
@@ -30,25 +30,35 @@ canny_adjusted = cv2.Canny(adjusted, 127, 255)
 
 black_mask_adjusted_treshold = cv2.bitwise_and(img, th_adjusted)
 
-top_border = 5
-bottom_border = 5
-left_border = 5
-right_border = 5
+# top_border = 5
+# bottom_border = 5
+# left_border = 5
+# right_border = 5
 
-border_color = (0, 255, 0)
+# border_color = (0, 255, 0)
 
-bordered_mask_adjusted_treshold = cv2.copyMakeBorder(
-    black_mask_adjusted_treshold,
-    top_border,
-    bottom_border,
-    left_border,
-    right_border,
-    cv2.BORDER_CONSTANT,
-    value=border_color,
-)
+# cv2.copyMakeBorder(
+#     img_rgb,
+#     top_border,
+#     bottom_border,
+#     left_border,
+#     right_border,
+#     cv2.BORDER_CONSTANT,
+#     value=border_color,
+# )
+
+# bordered_mask_adjusted_treshold = cv2.copyMakeBorder(
+#     black_mask_adjusted_treshold,
+#     top_border,
+#     bottom_border,
+#     left_border,
+#     right_border,
+#     cv2.BORDER_CONSTANT,
+#     value=border_color,
+# )
 
 bordered_mask_adjusted_treshold_canny = cv2.adaptiveThreshold(
-    bordered_mask_adjusted_treshold,
+    black_mask_adjusted_treshold,
     255,
     cv2.ADAPTIVE_THRESH_GAUSSIAN_C,
     cv2.THRESH_BINARY,
@@ -56,12 +66,12 @@ bordered_mask_adjusted_treshold_canny = cv2.adaptiveThreshold(
     10,
 )
 
-blurred = cv2.GaussianBlur(bordered_mask_adjusted_treshold, (5, 5), 0)
+blurred = cv2.GaussianBlur(black_mask_adjusted_treshold, (5, 5), 0)
 median_filtered = cv2.medianBlur(
-    bordered_mask_adjusted_treshold, 5
+    black_mask_adjusted_treshold, 5
 )  # Adjust the kernel size as needed
 bilateral_filtered = cv2.bilateralFilter(
-    bordered_mask_adjusted_treshold, d=7, sigmaColor=75, sigmaSpace=75
+    bordered_mask_adjusted_treshold_canny, d=4, sigmaColor=75, sigmaSpace=150
 )
 
 noise_reduction_image = cv2.adaptiveThreshold(
@@ -70,10 +80,45 @@ noise_reduction_image = cv2.adaptiveThreshold(
     cv2.ADAPTIVE_THRESH_GAUSSIAN_C,
     cv2.THRESH_BINARY,
     11,
-    2,
+    1,
 )
 
-draw_corners(noise_reduction_image, img_rgb)
+blurred_out_x = cv2.GaussianBlur(noise_reduction_image, (3, 1), 0)
+blurred_out_y = cv2.GaussianBlur(noise_reduction_image, (1, 3), 0)
+
+CLOSE_RECT = 1
+OPEN_RECT = 30
+
+se1_x = cv2.getStructuringElement(cv2.MORPH_RECT, (CLOSE_RECT, CLOSE_RECT))
+se2_x = cv2.getStructuringElement(cv2.MORPH_RECT, (OPEN_RECT, OPEN_RECT))
+mask_x = cv2.morphologyEx(
+    blurred_out_x.astype("uint8"),
+    cv2.MORPH_CLOSE,
+    se1_x,
+)
+mask_x = cv2.morphologyEx(mask_x, cv2.MORPH_OPEN, se2_x)
+
+mask_x = np.dstack([mask_x, mask_x, mask_x]) / 255
+out_x = img_rgb * mask_x
+
+
+se1_y = cv2.getStructuringElement(cv2.MORPH_RECT, (CLOSE_RECT, CLOSE_RECT))
+se2_y = cv2.getStructuringElement(cv2.MORPH_RECT, (OPEN_RECT, OPEN_RECT))
+mask_y = cv2.morphologyEx(
+    blurred_out_y.astype("uint8"),
+    cv2.MORPH_CLOSE,
+    se1_y,
+)
+mask_y = cv2.morphologyEx(mask_y, cv2.MORPH_OPEN, se2_x)
+
+mask_y = np.dstack([mask_y, mask_y, mask_y]) / 255
+out_y = img_rgb * mask_y
+
+
+out_final = cv2.bitwise_and(out_x, out_y)
+out_final = cv2.cvtColor(np.uint8(out_final), cv2.COLOR_RGB2GRAY)
+_, out_final = cv2.threshold(out_final, 0, 255, cv2.THRESH_BINARY)
+
 
 images = [
     img,
@@ -91,7 +136,9 @@ images = [
     # median_filtered,
     noise_reduction_image,
     cv2.bitwise_not(noise_reduction_image),
-    draw_contours(img_rgb, cv2.bitwise_not(noise_reduction_image)),
+    out_x,
+    out_y,
+    draw_contours(img_rgb, out_final),
 ]
 titles = [
     "image",
@@ -109,12 +156,14 @@ titles = [
     # "median_filtered",
     "final",
     "not",
-    "contour",
+    "out_x",
+    "out_y",
+    "out_final",
 ]
 
-
+plt.figure(figsize=(15, 10))
 for i in range(len(images)):
-    plt.subplot(2, 3, i + 1)
+    plt.subplot(3, 3, i + 1)
     plt.title(titles[i])
     plt.imshow(images[i], cmap="gray")
     plt.axis("off")
