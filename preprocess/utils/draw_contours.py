@@ -40,8 +40,8 @@ def draw_contours(img, ext):
     plt.figure(figsize=(10, 7))
     for i, rect_image in enumerate(rectangle_images):
         plt.subplot(
-            2,
-            len(rectangle_images) // 2,
+            1,
+            len(rectangle_images),
             i + 1,
         )
         plt.imshow(rectangle_images[i])

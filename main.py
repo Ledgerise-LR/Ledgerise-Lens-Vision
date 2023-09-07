@@ -1,8 +1,10 @@
+from preprocess.preprocess import *
+from data_setup import create_dataloaders
+from utils import save_model
 
-import "./preprocess/preprocess.py"
 
 def main():
-    
+    print("hello")
 
 
 if __name__ == "__main__":

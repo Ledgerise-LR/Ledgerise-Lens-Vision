@@ -5,9 +5,9 @@ import matplotlib.pyplot as plt
 from utils.draw_contours import *
 from utils.draw_corners import *
 
-img_read = cv2.imread("./preprocess/data/img1.png", cv2.IMREAD_UNCHANGED)
+img_read = cv2.imread("./preprocess/data/img.png", cv2.IMREAD_UNCHANGED)
 img_rgb = cv2.cvtColor(img_read, cv2.COLOR_BGR2RGB)
-img = cv2.imread("./preprocess/data/img1.png", cv2.IMREAD_GRAYSCALE)
+img = cv2.imread("./preprocess/data/img.png", cv2.IMREAD_GRAYSCALE)
 canny = cv2.Canny(img, 127, 255)
 _, th1 = cv2.threshold(img, 70, 255, cv2.THRESH_BINARY)
 th2 = cv2.adaptiveThreshold(
