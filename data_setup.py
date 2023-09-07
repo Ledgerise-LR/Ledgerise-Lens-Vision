@@ -3,6 +3,20 @@ import os
 import torch
 from torchvision import datasets, transforms
 from torch.utils.data import DataLoader
+from pathlib import Path
+import random
+
+
+def investigate_data(path: str):
+    files = []
+    for root, dirs, files in os.walk(path):
+        print(root)
+        print(dirs)
+        print(len(files))
+        print("--------------------------------")
+
+    # train_data = random.sample(range(len(files)), k=(len(files) - 44))  # type: ignore
+    # test_data = random.sample(range(len(files)), k=44)  # type: ignore
 
 
 def create_dataloaders(

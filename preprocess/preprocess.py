@@ -2,8 +2,8 @@ import cv2
 import numpy as np
 import matplotlib.pyplot as plt
 
-from utils.draw_contours import *
-from utils.draw_corners import *
+from utils.draw_contours import draw_contours
+from utils.draw_corners import draw_corners
 
 img_read = cv2.imread("./preprocess/data/img.png", cv2.IMREAD_UNCHANGED)
 img_rgb = cv2.cvtColor(img_read, cv2.COLOR_BGR2RGB)
