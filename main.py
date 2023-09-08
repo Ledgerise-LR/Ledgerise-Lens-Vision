@@ -21,13 +21,17 @@ def main():
         num_workers=NUM_WORKERS,  # type: ignore
     )
 
-    # print(
-    #     f"Train data loader: {train_data_loader} | Length of train_dataloader {len(train_data_loader)} | {len(train_data_loader.dataset)} total samples."  # type: ignore
-    # )
-    # print(
-    #     f"Test data loader: {test_data_loader} | Length of test_dataloader {len(test_data_loader)} | {len(test_data_loader.dataset)} total samples."  # type: ignore
-    # )
-    # print(class_names)
+    print(
+        f"Train data loader: {train_data_loader} | Length of train_dataloader {len(train_data_loader)} | {len(train_data_loader.dataset)} total samples."  # type: ignore
+    )
+    print(
+        f"Test data loader: {test_data_loader} | Length of test_dataloader {len(test_data_loader)} | {len(test_data_loader.dataset)} total samples."  # type: ignore
+    )
+    print(class_names)
+
+    print("\n\n")
+
+    investigate_data("data")
 
 
 if __name__ == "__main__":
