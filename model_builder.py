@@ -1,6 +1,8 @@
 import torch
 from torch import nn
 
+CLASSIFIER_INPUT_SIDE = 14
+
 
 class LedgeriseLens(nn.Module):
     def __init__(self, input_channels, hidden_units, output_channels):
@@ -48,7 +50,14 @@ class LedgeriseLens(nn.Module):
 
         self.classifier = nn.Sequential(
             nn.Flatten(),
+            nn.Linear(
+                in_features=hidden_units
+                * (CLASSIFIER_INPUT_SIDE * CLASSIFIER_INPUT_SIDE),
+                out_features=hidden_units,
+            ),
+            nn.ReLU(),
             nn.Linear(in_features=hidden_units, out_features=output_channels),
+            nn.ReLU(),
         )
 
     def forward(self, x: torch.Tensor) -> torch.Tensor:

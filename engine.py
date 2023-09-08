@@ -2,8 +2,9 @@ import torch
 from torch.utils.data import DataLoader
 from tqdm.auto import tqdm
 from utils import accuracy_fn
-from timeit import Timer as timer
+from timeit import default_timer as timer
 from utils import print_train_time
+from pprint import pprint
 
 from typing import Tuple, List, Dict
 
@@ -21,14 +22,14 @@ def train_step(
     train_loss, train_acc = 0, 0
 
     for batch, (X, y) in enumerate(dataloader):
-        X, y = X.to(device), y.to(device)
+        # X, y = X.to(device), y.to(device)
 
-        y_logits = model(X)
+        y_logits = model(X).squeeze().squeeze()
 
-        y_pred = torch.round(torch.sigmoid(y_logits))
+        y_pred = torch.softmax(y_logits, dim=1).argmax(dim=1)
 
-        loss = loss_fn(y_logits, y)
-        acc = accuracy_fn(y_true=y, y_pred=y_pred)
+        loss = loss_fn(y_logits.type(torch.float), y.type(torch.LongTensor))
+        acc = accuracy_fn(y_true=y.type(torch.float), y_pred=y_pred.type(torch.float))
 
         train_loss += loss
         train_acc += acc
@@ -36,6 +37,9 @@ def train_step(
         optimizer.zero_grad()
         loss.backward()
         optimizer.step()
+
+        if batch % 4 == 0:
+            print(f"Training | Visited {(len(dataloader.dataset) // len(dataloader)) * (batch + 1)} samples.")  # type: ignore
 
     train_loss /= len(dataloader)
     train_acc /= len(dataloader)
@@ -55,22 +59,29 @@ def test_step(
     model.eval()
     with torch.inference_mode():
         for batch, (X, y) in enumerate(dataloader):
-            X, y = X.to(device), y.to(device)
+            # X, y = X.to(device), y.to(device)
 
-            y_logits = model(X)
+            y_logits = model(X).squeeze()
 
-            y_pred = torch.round(torch.sigmoid(y_logits))
+            y_pred = torch.softmax(y_logits, dim=1).argmax(dim=1)
 
-            loss = loss_fn(y_logits, y)
-            acc = accuracy_fn(y_true=y, y_pred=y_pred)
+            loss = loss_fn(y_logits.type(torch.float), y.type(torch.LongTensor))
+            acc = accuracy_fn(
+                y_true=y.type(torch.float), y_pred=y_pred.type(torch.float)
+            )
 
             test_loss += loss
             test_acc += acc
 
+            if batch % 4 == 0:
+                print(
+                    f"Testing | Visited {(len(dataloader.dataset) // len(dataloader)) * (batch + 1)} samples."  # type: ignore
+                )
+
         test_loss /= len(dataloader)
         test_acc /= len(dataloader)
 
-    return test_loss, test_acc
+        return test_loss, test_acc
 
 
 def train(
@@ -101,7 +112,7 @@ def train(
 
         test_loss, test_acc = test_step(
             model=model,
-            dataloader=train_dataloader,
+            dataloader=test_dataloader,
             loss_fn=loss_fn,
             accuracy_fn=accuracy_fn,
             device=device,
@@ -114,6 +125,5 @@ def train(
 
     end_time = timer()
 
-    print_train_time(start_time, end_time, device)
-
-    return results
+    print_train_time(start=start_time, end=end_time, device=device)
+    pprint(results)
