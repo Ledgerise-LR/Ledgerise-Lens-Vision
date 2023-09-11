@@ -6,8 +6,7 @@ from .utils.draw_contours import draw_contours
 from .utils.draw_corners import draw_corners
 
 
-def preprocessv2():
-    img = cv2.imread("./preprocess/data/img4.png")
+def preprocessv2(img):
     sat = cv2.cvtColor(img, cv2.COLOR_RGB2HSV)[:, :, 0]
 
     _, thresh = cv2.threshold(sat, 90, 255, 0)

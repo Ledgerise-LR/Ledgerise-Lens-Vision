@@ -34,6 +34,4 @@ def pred_and_plot_on_custom_data(
 
         # plt.title(title)
 
-        print(pred_probs)
-
         return class_names[pred_label]
