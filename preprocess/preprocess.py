@@ -2,14 +2,14 @@ import cv2
 import numpy as np
 import matplotlib.pyplot as plt
 
-from .utils.draw_contours import draw_contours
-from .utils.draw_corners import draw_corners
+from utils.draw_contours import draw_contours
+from utils.draw_corners import draw_corners
 
 
 def preprocess():
-    img_read = cv2.imread("./preprocess/data/img1.png", cv2.IMREAD_UNCHANGED)
+    img_read = cv2.imread("./preprocess/data/img3.png", cv2.IMREAD_UNCHANGED)
     img_rgb = cv2.cvtColor(img_read, cv2.COLOR_BGR2RGB)
-    img = cv2.imread("./preprocess/data/img1.png", cv2.IMREAD_GRAYSCALE)
+    img = cv2.imread("./preprocess/data/img3.png", cv2.IMREAD_GRAYSCALE)
     canny = cv2.Canny(img, 127, 255)
     _, th1 = cv2.threshold(img, 70, 255, cv2.THRESH_BINARY)
     th2 = cv2.adaptiveThreshold(
@@ -65,7 +65,7 @@ def preprocess():
         cv2.ADAPTIVE_THRESH_GAUSSIAN_C,
         cv2.THRESH_BINARY,
         11,
-        10,
+        3,
     )
 
     blurred = cv2.GaussianBlur(black_mask_adjusted_treshold, (5, 5), 0)
@@ -82,14 +82,14 @@ def preprocess():
         cv2.ADAPTIVE_THRESH_GAUSSIAN_C,
         cv2.THRESH_BINARY,
         11,
-        1,
+        3,
     )
 
     blurred_out_x = cv2.GaussianBlur(noise_reduction_image, (3, 1), 0)
     blurred_out_y = cv2.GaussianBlur(noise_reduction_image, (1, 3), 0)
 
-    CLOSE_RECT = 1
-    OPEN_RECT = 30
+    CLOSE_RECT = 2
+    OPEN_RECT = 15
 
     se1_x = cv2.getStructuringElement(cv2.MORPH_RECT, (CLOSE_RECT, CLOSE_RECT))
     se2_x = cv2.getStructuringElement(cv2.MORPH_RECT, (OPEN_RECT, OPEN_RECT))
@@ -137,7 +137,7 @@ def preprocess():
         cv2.bitwise_not(noise_reduction_image),
         out_x,
         out_y,
-        draw_contours(img_rgb, out_final)[0],
+        draw_contours(img_rgb, cv2.bitwise_not(out_final))[0],
     ]
     titles = [
         "image",
@@ -160,15 +160,18 @@ def preprocess():
         "out_final",
     ]
 
-    # plt.figure(figsize=(15, 10))
-    # for i in range(len(images)):
-    #     plt.subplot(3, 3, i + 1)
-    #     plt.title(titles[i])
-    #     plt.imshow(images[i], cmap="gray")
-    #     plt.axis("off")
+    plt.figure(figsize=(15, 10))
+    for i in range(len(images)):
+        plt.subplot(3, 3, i + 1)
+        plt.title(titles[i])
+        plt.imshow(images[i], cmap="gray")
+        plt.axis("off")
 
-    # plt.show()
+    plt.show()
 
     results = {"rect_images": draw_contours(img_rgb, out_final)[1], "img_rgb": img_rgb}
 
     return results
+
+
+preprocess()

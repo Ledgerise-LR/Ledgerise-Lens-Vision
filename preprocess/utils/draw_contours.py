@@ -45,14 +45,14 @@ def draw_contours(img, ext):
     if max_x - min_x > 0 and max_y - min_y > 0:
         cv2.rectangle(contour_image, (min_x, min_y), (max_x, max_y), (255, 0, 0), 2)
 
-    # plt.figure(figsize=(10, 7))
-    # for i, rect_image in enumerate(rectangle_images):
-    #     plt.subplot(
-    #         1,
-    #         len(rectangle_images),
-    #         i + 1,
-    #     )
-    #     plt.imshow(rectangle_images[i])
-    #     plt.axis("off")
+    plt.figure(figsize=(10, 7))
+    for i, rect_image in enumerate(rectangle_images):
+        plt.subplot(
+            1,
+            len(rectangle_images),
+            i + 1,
+        )
+        plt.imshow(rectangle_images[i]["extracted_rectangle"])
+        plt.axis("off")
 
     return contour_image, rectangle_images

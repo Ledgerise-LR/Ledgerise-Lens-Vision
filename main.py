@@ -43,15 +43,20 @@ def main():
 
         rect_image = i["extracted_rectangle"]
 
+        rect_image_resized = np.array(rect_image, dtype=np.uint8)
+
         pred_label = pred_and_plot_on_custom_data(
             model=model,
-            image=cv2.cvtColor(rect_image, cv2.COLOR_rgb),
+            image=rect_image_resized,
             transform=transform,  # type: ignore
             class_names=class_names,
         )
 
         print(pred_label)
-        # canvas_black[y : y + h, x : x + w] = rect_image
+        if pred_label == "not_parcel":
+            canvas_black[y : y + h, x : x + w] = preprocess_out["img_rgb"][
+                y : y + h, x : x + w
+            ]
 
     plt.imshow(canvas_black)
     plt.axis("off")
