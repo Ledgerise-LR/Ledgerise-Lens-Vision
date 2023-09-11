@@ -20,7 +20,7 @@ def preprocess():
     )
 
     # define the alpha and beta
-    alpha = 1.4  # Contrast control
+    alpha = 1.5  # Contrast control
     beta = 10  # Brightness control 1.4 10
 
     # call convertScaleAbs function
@@ -65,7 +65,7 @@ def preprocess():
         cv2.ADAPTIVE_THRESH_GAUSSIAN_C,
         cv2.THRESH_BINARY,
         11,
-        3,
+        10,
     )
 
     blurred = cv2.GaussianBlur(black_mask_adjusted_treshold, (5, 5), 0)
@@ -82,14 +82,14 @@ def preprocess():
         cv2.ADAPTIVE_THRESH_GAUSSIAN_C,
         cv2.THRESH_BINARY,
         11,
-        3,
+        5,
     )
 
-    blurred_out_x = cv2.GaussianBlur(noise_reduction_image, (3, 1), 0)
-    blurred_out_y = cv2.GaussianBlur(noise_reduction_image, (1, 3), 0)
+    blurred_out_x = cv2.GaussianBlur(noise_reduction_image, (1, 1), 0)
+    blurred_out_y = cv2.GaussianBlur(noise_reduction_image, (1, 1), 0)
 
     CLOSE_RECT = 2
-    OPEN_RECT = 15
+    OPEN_RECT = 25
 
     se1_x = cv2.getStructuringElement(cv2.MORPH_RECT, (CLOSE_RECT, CLOSE_RECT))
     se2_x = cv2.getStructuringElement(cv2.MORPH_RECT, (OPEN_RECT, OPEN_RECT))
@@ -169,7 +169,7 @@ def preprocess():
 
     plt.show()
 
-    results = {"rect_images": draw_contours(img_rgb, out_final)[1], "img_rgb": img_rgb}
+    results = [draw_contours(img_rgb, cv2.bitwise_not(out_final))[1], img_rgb]
 
     return results
 

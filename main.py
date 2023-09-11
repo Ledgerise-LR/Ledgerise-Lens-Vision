@@ -1,5 +1,6 @@
 from process_custom import process_custom
-from preprocess.preprocess import preprocess
+
+# from preprocess.preprocess import preprocess
 from pprint import pprint
 import numpy as np
 import matplotlib.pyplot as plt
@@ -8,6 +9,10 @@ import model_builder
 import torch
 from torchvision import transforms
 import cv2
+from pprint import pprint
+from preprocess.preprocess_improved import preprocessv2
+
+MARGIN = 20
 
 HIDDEN_UNITS = 16
 class_names = ["not_parcel", "parcel"]
@@ -27,21 +32,17 @@ transform = transforms.Compose(
 
 
 def main():
-    preprocess_out = preprocess()
+    preprocess_out = preprocessv2()
 
-    img_rgb_shape = preprocess_out["img_rgb"].shape
+    img_rgb = preprocess_out[1]
+    img_rgb_shape = preprocess_out[1].shape
 
     canvas_black = np.zeros(img_rgb_shape, dtype=np.uint8)
 
-    print(f"Shape of img rgb: {img_rgb_shape}")
+    for i in preprocess_out[0]:
+        x, y, w, h = i[0], i[1], i[2], i[3]
 
-    for i in preprocess_out["rect_images"]:
-        rect_shape = i["extracted_rectangle"].shape
-        x, y, w, h = i["x"], i["y"], i["w"], i["h"]
-        print(f"Shape of the extracted rectangle: {rect_shape}")
-        print(f"X: {x}, Y: {y}, W: {w}, H: {h}")  # type: ignore
-
-        rect_image = i["extracted_rectangle"]
+        rect_image = img_rgb[y : y + h, x : x + w]
 
         rect_image_resized = np.array(rect_image, dtype=np.uint8)
 
@@ -52,15 +53,21 @@ def main():
             class_names=class_names,
         )
 
-        print(pred_label)
-        if pred_label == "not_parcel":
-            canvas_black[y : y + h, x : x + w] = preprocess_out["img_rgb"][
-                y : y + h, x : x + w
-            ]
+        if pred_label == "parcel":
+            cv2.putText(
+                img_rgb,
+                "parcel",
+                (x + MARGIN, y + MARGIN),
+                cv2.FONT_HERSHEY_COMPLEX,
+                1,
+                (255, 0, 0),
+                2,
+                cv2.LINE_AA,
+            )
+            cv2.rectangle(img_rgb, (x, y), (x + w, y + h), (255, 0, 0), 5)
 
-    plt.imshow(canvas_black)
+    plt.imshow(img_rgb)
     plt.axis("off")
-    plt.title("Only objects image not classified yet.")
     plt.show()
 
 

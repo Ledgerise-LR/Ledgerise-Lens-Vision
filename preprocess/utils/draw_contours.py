@@ -10,8 +10,6 @@ def draw_contours(img, ext):
     )
 
     rectangle_images = []
-
-    print(len(contours))
     contour_image = img.copy()
 
     min_contour_area = 5000
@@ -32,27 +30,21 @@ def draw_contours(img, ext):
             min_y, max_y = min(y, min_y), max(y + h, max_y)
             cv2.rectangle(contour_image, (x, y), (x + w, y + h), (255, 0, 0), 2)
             extracted_rectangle = img[y : y + h, x : x + w]
-            rectangle_images.append(
-                {
-                    "extracted_rectangle": extracted_rectangle,
-                    "x": x,
-                    "y": y,
-                    "w": w,
-                    "h": h,
-                }
-            )
+            rectangle_images.append(list([x, y, w, h]))
+            print(len(rectangle_images))
 
     if max_x - min_x > 0 and max_y - min_y > 0:
         cv2.rectangle(contour_image, (min_x, min_y), (max_x, max_y), (255, 0, 0), 2)
 
-    plt.figure(figsize=(10, 7))
-    for i, rect_image in enumerate(rectangle_images):
-        plt.subplot(
-            1,
-            len(rectangle_images),
-            i + 1,
-        )
-        plt.imshow(rectangle_images[i]["extracted_rectangle"])
-        plt.axis("off")
+    print("aa", len(rectangle_images))
 
+    # plt.figure(figsize=(10, 7))
+    # for i, rect_image in enumerate(rectangle_images):
+    #     plt.subplot(
+    #         1,
+    #         len(rectangle_images),
+    #         i + 1,
+    #     )
+    #     plt.imshow(rectangle_images[i]["extracted_rectangle"])
+    #     plt.axis("off")
     return contour_image, rectangle_images
