@@ -1,2 +1,110 @@
-def process_custom():
-    pass
+# from preprocess.preprocess import preprocess
+from pprint import pprint
+import numpy as np
+import matplotlib.pyplot as plt
+from prediction import pred_and_plot_on_custom_data
+import model_builder
+import torch
+from torchvision import transforms
+import cv2
+from preprocess.preprocess_improved import preprocessv2
+
+# from PIL import Image
+# from io import StringIO
+
+MARGIN = 20
+
+HIDDEN_UNITS = 16
+class_names = ["not_parcel", "parcel"]
+
+model = model_builder.LedgeriseLens(
+    input_channels=3, hidden_units=HIDDEN_UNITS, output_channels=len(class_names)
+)
+
+model.load_state_dict(torch.load(f="models/LedgeriseLensV4.pth"))
+
+transform = transforms.Compose(
+    [
+        transforms.Resize(size=(64, 64)),
+        transforms.ToTensor(),
+    ]
+)
+
+cap = cv2.VideoCapture(0)
+cap.set(cv2.CAP_PROP_FRAME_HEIGHT, cv2.CAP_PROP_FRAME_WIDTH)
+
+detector = cv2.QRCodeDetector()
+
+
+def process_custom(img_base64):
+    user_info = ""
+    found_status = False
+
+    # while True:
+    img = np.asarray(bytearray(img_base64), dtype=np.uint8)
+    img = cv2.imdecode(img, 0)
+
+    # ret, img = cap.read()
+    # img = cv2.imread("./preprocess/data/img2.png")
+    preprocess_out = preprocessv2(img=img)
+
+    img_rgb = preprocess_out[1]
+    img_rgb_shape = preprocess_out[1].shape
+
+    canvas_black = np.zeros(img_rgb_shape, dtype=np.uint8)
+
+    for i in preprocess_out[0]:
+        x, y, w, h = i[0], i[1], i[2], i[3]
+
+        rect_image = img_rgb[
+            y : y + h,
+            x : x + w,
+        ]
+
+        rect_image_resized = np.array(rect_image, dtype=np.uint8)
+
+        pred_label = pred_and_plot_on_custom_data(
+            model=model,
+            image=rect_image_resized,
+            transform=transform,  # type: ignore
+            class_names=class_names,
+        )
+
+        if pred_label == "parcel":
+            if (
+                rect_image.shape[0] == img_rgb.shape[0]
+                and rect_image.shape[1] == img_rgb.shape[1]
+            ):
+                pass
+            else:
+                cv2.rectangle(img_rgb, (x, y), (x + w, y + h), (255, 0, 0), 5)
+                cv2.putText(
+                    img_rgb,
+                    "parcel",
+                    (x + MARGIN, y + MARGIN),
+                    cv2.FONT_HERSHEY_COMPLEX,
+                    1,
+                    (255, 0, 0),
+                    2,
+                    cv2.LINE_AA,
+                )
+
+                ret_qr, decoded_info, points, _ = detector.detectAndDecodeMulti(
+                    img_rgb[y : y + h, x : x + w]
+                )
+                if ret_qr:
+                    for s, p in zip(decoded_info, points):
+                        if s:
+                            found_status = True
+                            user_info = s
+                            color = (0, 255, 0)
+                        else:
+                            color = (255, 0, 0)
+                        img_rgb = cv2.polylines(
+                            img_rgb, [p.astype(int)], True, color, 8
+                        )
+
+    return img_rgb, user_info, found_status
+    # cv2.imshow("frame", cv2.cvtColor(img_rgb, cv2.COLOR_BGR2RGB))
+    # if cv2.waitKey(1) == ord("q"):
+    #     break
