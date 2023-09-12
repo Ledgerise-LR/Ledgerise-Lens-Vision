@@ -30,6 +30,9 @@ transform = transforms.Compose(
 )
 
 cap = cv2.VideoCapture(0)
+cap.set(cv2.CAP_PROP_FRAME_HEIGHT, cv2.CAP_PROP_FRAME_WIDTH)
+
+detector = cv2.QRCodeDetector()
 
 
 def main():
@@ -65,7 +68,7 @@ def main():
                     rect_image.shape[0] == img_rgb.shape[0]
                     and rect_image.shape[1] == img_rgb.shape[1]
                 ):
-                    print("aaaaaaa")
+                    pass
                 else:
                     cv2.rectangle(img_rgb, (x, y), (x + w, y + h), (255, 0, 0), 5)
                     cv2.putText(
@@ -78,6 +81,20 @@ def main():
                         2,
                         cv2.LINE_AA,
                     )
+
+                    ret_qr, decoded_info, points, _ = detector.detectAndDecodeMulti(
+                        img_rgb[y : y + h, x : x + w]
+                    )
+                    if ret_qr:
+                        for s, p in zip(decoded_info, points):
+                            if s:
+                                print(s)
+                                color = (0, 255, 0)
+                            else:
+                                color = (255, 0, 0)
+                            img_rgb = cv2.polylines(
+                                img_rgb, [p.astype(int)], True, color, 8
+                            )
 
         cv2.imshow("frame", cv2.cvtColor(img_rgb, cv2.COLOR_BGR2RGB))
         if cv2.waitKey(1) == ord("q"):

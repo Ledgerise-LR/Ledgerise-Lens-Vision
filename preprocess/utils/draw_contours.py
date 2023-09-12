@@ -12,7 +12,7 @@ def draw_contours(img, ext):
     rectangle_images = []
     contour_image = img.copy()
 
-    min_contour_area = 5000
+    min_contour_area = 10000
 
     try:
         hierarchy = hierarchy[0]
