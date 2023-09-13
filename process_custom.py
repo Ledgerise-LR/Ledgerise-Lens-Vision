@@ -21,7 +21,7 @@ model = model_builder.LedgeriseLens(
     input_channels=3, hidden_units=HIDDEN_UNITS, output_channels=len(class_names)
 )
 
-model.load_state_dict(torch.load(f="models/LedgeriseLensV4.pth"))
+model.load_state_dict(torch.load(f="../LedgeriseLens-AI/models/LedgeriseLensV4.pth"))
 
 transform = transforms.Compose(
     [
@@ -30,19 +30,19 @@ transform = transforms.Compose(
     ]
 )
 
-cap = cv2.VideoCapture(0)
-cap.set(cv2.CAP_PROP_FRAME_HEIGHT, cv2.CAP_PROP_FRAME_WIDTH)
+# cap = cv2.VideoCapture(0)
+# cap.set(cv2.CAP_PROP_FRAME_HEIGHT, cv2.CAP_PROP_FRAME_WIDTH)
 
 detector = cv2.QRCodeDetector()
 
 
-def process_custom(img_base64):
+def process_custom(img):
     user_info = ""
     found_status = False
 
     # while True:
-    img = np.asarray(bytearray(img_base64), dtype=np.uint8)
-    img = cv2.imdecode(img, 0)
+    # img = np.asarray(bytearray(img_base64), dtype=np.uint8)
+    # img = cv2.imdecode(img, 0)
 
     # ret, img = cap.read()
     # img = cv2.imread("./preprocess/data/img2.png")
