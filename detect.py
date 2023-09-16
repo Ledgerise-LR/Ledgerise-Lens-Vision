@@ -3,20 +3,28 @@ import sys
 import cv2
 import numpy as np
 import base64
+import fileinput
 
+input = ""
 
-image = cv2.imread(sys.argv[1])
+for line in fileinput.input(encoding="utf-8"):
+    input += line.strip()
+
+image_data = base64.b64decode(input)
+
+image_np_array = np.frombuffer(image_data, np.uint8)
+
+image = cv2.imdecode(image_np_array, cv2.IMREAD_COLOR)
+
 if image is not None:
-    img_rgb, user_info, found_status = process_custom(image)
-    processed_image_data = base64.b64encode(cv2.imencode(".png", img_rgb)[1]).decode("utf-8")  # type: ignore
+    image = cv2.resize(image, (375, 700), interpolation=cv2.INTER_AREA)
+    img_rgb, user_info, found_status, coordinates = process_custom(image)
+
     results = {
-        "img_rgb": processed_image_data,
-        "user_info": user_info,
+        "coordinates_array": coordinates,
         "found_status": found_status,
     }
-    with open("../Nft-Fundraising-nodejs-backend/res_image.png", "wb") as f:
-        f.write(base64.b64decode(processed_image_data))
-    sys.stdout.write("done")
+    sys.stdout.write(str(results))
     sys.stdout.flush()
 else:
     pass

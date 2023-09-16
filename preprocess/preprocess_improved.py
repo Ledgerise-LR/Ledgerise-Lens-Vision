@@ -23,15 +23,15 @@ def preprocessv2(img):
         cv2.cvtColor(img, cv2.COLOR_BGR2RGB), cv2.bitwise_not(morph)
     )[1]
 
-    images = [img, sat, thresh, morph, rect_images_first_case, rect_images_second_case]
-    titles = [
-        "img",
-        "sat",
-        "thresh",
-        "morph",
-        "rect_images_first_case",
-        "rect_images_second_case",
-    ]
+    # images = [img, sat, thresh, morph, rect_images_first_case, rect_images_second_case]
+    # titles = [
+    #     "img",
+    #     "sat",
+    #     "thresh",
+    #     "morph",
+    #     "rect_images_first_case",
+    #     "rect_images_second_case",
+    # ]
 
     # plt.figure(figsize=(10, 7))
     # for i in range(len(images)):
@@ -42,7 +42,7 @@ def preprocessv2(img):
 
     # plt.show()
 
-    return (
-        (rect_images_first_case + rect_images_second_case),
+    return [
+        rect_images_first_case + rect_images_second_case,
         cv2.cvtColor(img, cv2.COLOR_BGR2RGB),
-    )
+    ]

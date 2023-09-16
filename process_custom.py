@@ -12,8 +12,6 @@ from preprocess.preprocess_improved import preprocessv2
 # from PIL import Image
 # from io import StringIO
 
-MARGIN = 20
-
 HIDDEN_UNITS = 16
 class_names = ["not_parcel", "parcel"]
 
@@ -38,7 +36,7 @@ detector = cv2.QRCodeDetector()
 
 def process_custom(img):
     user_info = ""
-    found_status = False
+    found_status = "false"
 
     # while True:
     # img = np.asarray(bytearray(img_base64), dtype=np.uint8)
@@ -49,11 +47,14 @@ def process_custom(img):
     preprocess_out = preprocessv2(img=img)
 
     img_rgb = preprocess_out[1]
-    img_rgb_shape = preprocess_out[1].shape
+    # img_rgb_shape = preprocess_out[1].shape
 
-    canvas_black = np.zeros(img_rgb_shape, dtype=np.uint8)
+    # canvas_black = np.zeros(img_rgb_shape, dtype=np.uint8)
+
+    coordinates = []
 
     for i in preprocess_out[0]:
+        coordinates = []
         x, y, w, h = i[0], i[1], i[2], i[3]
 
         rect_image = img_rgb[
@@ -77,17 +78,20 @@ def process_custom(img):
             ):
                 pass
             else:
-                cv2.rectangle(img_rgb, (x, y), (x + w, y + h), (255, 0, 0), 5)
-                cv2.putText(
-                    img_rgb,
-                    "parcel",
-                    (x + MARGIN, y + MARGIN),
-                    cv2.FONT_HERSHEY_COMPLEX,
-                    1,
-                    (255, 0, 0),
-                    2,
-                    cv2.LINE_AA,
-                )
+                coordinates = [x, w, y, h]
+
+                found_status = "true"
+                # cv2.rectangle(img_rgb, (x, y), (x + w, y + h), (255, 0, 0), 5)
+                # cv2.putText(
+                #     img_rgb,
+                #     "parcel",
+                #     (x + MARGIN, y + MARGIN),
+                #     cv2.FONT_HERSHEY_COMPLEX,
+                #     1,
+                #     (255, 0, 0),
+                #     2,
+                #     cv2.LINE_AA,
+                # )
 
                 ret_qr, decoded_info, points, _ = detector.detectAndDecodeMulti(
                     img_rgb[y : y + h, x : x + w]
@@ -95,16 +99,19 @@ def process_custom(img):
                 if ret_qr:
                     for s, p in zip(decoded_info, points):
                         if s:
-                            found_status = True
+                            found_status = "true"
                             user_info = s
                             color = (0, 255, 0)
                         else:
                             color = (255, 0, 0)
-                        img_rgb = cv2.polylines(
-                            img_rgb, [p.astype(int)], True, color, 8
-                        )
+                            pass
+                        # img_rgb = cv2.polylines(
+                        #     img_rgb, [p.astype(int)], True, color, 8
+                        # )
+        else:
+            found_status = "false"
 
-    return img_rgb, user_info, found_status
+    return img_rgb, user_info, found_status, coordinates
     # cv2.imshow("frame", cv2.cvtColor(img_rgb, cv2.COLOR_BGR2RGB))
     # if cv2.waitKey(1) == ord("q"):
     #     break
