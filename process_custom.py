@@ -54,7 +54,6 @@ def process_custom(img):
     coordinates = []
 
     for i in preprocess_out[0]:
-        coordinates = []
         x, y, w, h = i[0], i[1], i[2], i[3]
 
         rect_image = img_rgb[
@@ -79,8 +78,6 @@ def process_custom(img):
                 pass
             else:
                 coordinates = [x, w, y, h]
-
-                found_status = "true"
                 # cv2.rectangle(img_rgb, (x, y), (x + w, y + h), (255, 0, 0), 5)
                 # cv2.putText(
                 #     img_rgb,
@@ -93,9 +90,7 @@ def process_custom(img):
                 #     cv2.LINE_AA,
                 # )
 
-                ret_qr, decoded_info, points, _ = detector.detectAndDecodeMulti(
-                    img_rgb[y : y + h, x : x + w]
-                )
+                ret_qr, decoded_info, points, _ = detector.detectAndDecodeMulti(img_rgb)
                 if ret_qr:
                     for s, p in zip(decoded_info, points):
                         if s:

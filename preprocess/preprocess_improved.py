@@ -7,7 +7,7 @@ from .utils.draw_corners import draw_corners
 
 
 def preprocessv2(img):
-    sat = cv2.cvtColor(img, cv2.COLOR_RGB2HSV)[:, :, 0]
+    sat = cv2.cvtColor(img, cv2.COLOR_RGB2HSV)[:, :, 1]
 
     _, thresh = cv2.threshold(sat, 90, 255, 0)
 
