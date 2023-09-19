@@ -8,6 +8,7 @@ import torch
 from torchvision import transforms
 import cv2
 from preprocess.preprocess_improved import preprocessv2
+from scanQrDemo import scanQr
 
 # from PIL import Image
 # from io import StringIO
@@ -52,6 +53,7 @@ def process_custom(img):
     # canvas_black = np.zeros(img_rgb_shape, dtype=np.uint8)
 
     coordinates = []
+    qr_coordinates = []
 
     for i in preprocess_out[0]:
         x, y, w, h = i[0], i[1], i[2], i[3]
@@ -90,23 +92,15 @@ def process_custom(img):
                 #     cv2.LINE_AA,
                 # )
 
-                ret_qr, decoded_info, points, _ = detector.detectAndDecodeMulti(img_rgb)
-                if ret_qr:
-                    for s, p in zip(decoded_info, points):
-                        if s:
-                            found_status = "true"
-                            user_info = s
-                            color = (0, 255, 0)
-                        else:
-                            color = (255, 0, 0)
-                            pass
-                        # img_rgb = cv2.polylines(
-                        #     img_rgb, [p.astype(int)], True, color, 8
-                        # )
+                decoded_data, rect_pts = scanQr(img=img)
+                if decoded_data:
+                    found_status = "true"
+                    user_info = f"{decoded_data}"
+                    qr_coordinates = f"{rect_pts}"
         else:
             found_status = "false"
 
-    return img_rgb, user_info, found_status, coordinates
+    return img_rgb, user_info, found_status, coordinates, qr_coordinates
     # cv2.imshow("frame", cv2.cvtColor(img_rgb, cv2.COLOR_BGR2RGB))
     # if cv2.waitKey(1) == ord("q"):
     #     break

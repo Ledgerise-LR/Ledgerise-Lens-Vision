@@ -25,12 +25,15 @@ dsize = (width, height)
 
 if image is not None:
     image = cv2.resize(image, (width, height), interpolation=cv2.INTER_AREA)
-    img_rgb, user_info, found_status, coordinates = process_custom(image)
+    img_rgb, user_info, found_status, coordinates, qr_coordinates = process_custom(
+        image
+    )
 
     results = {
         "coordinates_array": coordinates,
         "found_status": found_status,
         "user_info": user_info,
+        "qr_coordinates": qr_coordinates,
     }
     sys.stdout.write(str(results))
     sys.stdout.flush()
