@@ -92,11 +92,12 @@ def process_custom(img):
                 #     cv2.LINE_AA,
                 # )
 
-                decoded_data, rect_pts = scanQr(img=img)
-                if decoded_data:
+                decoded_data, rect_pts = scanQr(img=img)  # type: ignore
+                if str(decoded_data) != "None":
                     found_status = "true"
                     user_info = f"{decoded_data}"
                     qr_coordinates = f"{rect_pts}"
+                    return img_rgb, user_info, found_status, coordinates, qr_coordinates
         else:
             found_status = "false"
 

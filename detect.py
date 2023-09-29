@@ -16,15 +16,15 @@ image_np_array = np.frombuffer(image_data, np.uint8)
 
 image = cv2.imdecode(image_np_array, cv2.IMREAD_COLOR)
 
-width = int(375 * 0.941)
-height = int(650 * 0.941)
+# width = int(375 * 0.941)
+# height = int(650 * 0.941)
 
 # dsize
-dsize = (width, height)
+# dsize = (width, height)
 
 
 if image is not None:
-    image = cv2.resize(image, (width, height), interpolation=cv2.INTER_AREA)
+    # image = cv2.resize(image, (width, height), interpolation=cv2.INTER_AREA)
     img_rgb, user_info, found_status, coordinates, qr_coordinates = process_custom(
         image
     )
