@@ -38,6 +38,7 @@ detector = cv2.QRCodeDetector()
 def process_custom(img):
     user_info = ""
     found_status = "false"
+    max_pred_prob = 0
 
     # while True:
     # img = np.asarray(bytearray(img_base64), dtype=np.uint8)
@@ -65,14 +66,15 @@ def process_custom(img):
 
         rect_image_resized = np.array(rect_image, dtype=np.uint8)
 
-        pred_label = pred_and_plot_on_custom_data(
+        pred_label, pred_prob = pred_and_plot_on_custom_data(
             model=model,
             image=rect_image_resized,
             transform=transform,  # type: ignore
             class_names=class_names,
         )
 
-        if pred_label == "parcel":
+        if pred_label == "parcel" and pred_prob >= max_pred_prob:
+            max_pred_prob = pred_prob
             if (
                 rect_image.shape[0] == img_rgb.shape[0]
                 and rect_image.shape[1] == img_rgb.shape[1]
