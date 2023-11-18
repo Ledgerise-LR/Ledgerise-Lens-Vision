@@ -38,7 +38,6 @@ detector = cv2.QRCodeDetector()
 def process_custom(img):
     user_info = ""
     found_status = "false"
-    max_pred_prob = 0
 
     # while True:
     # img = np.asarray(bytearray(img_base64), dtype=np.uint8)
@@ -55,6 +54,8 @@ def process_custom(img):
 
     coordinates = []
     qr_coordinates = []
+
+    max_pred_prob = 0
 
     for i in preprocess_out[0]:
         x, y, w, h = i[0], i[1], i[2], i[3]
@@ -73,37 +74,37 @@ def process_custom(img):
             class_names=class_names,
         )
 
-        if pred_label == "parcel" and pred_prob >= max_pred_prob:
-            max_pred_prob = pred_prob
+        if pred_label == "parcel":
             if (
                 rect_image.shape[0] == img_rgb.shape[0]
                 and rect_image.shape[1] == img_rgb.shape[1]
             ):
                 pass
             else:
-                coordinates = [x, w, y, h]
-                # cv2.rectangle(img_rgb, (x, y), (x + w, y + h), (255, 0, 0), 5)
-                # cv2.putText(
-                #     img_rgb,
-                #     "parcel",
-                #     (x + MARGIN, y + MARGIN),
-                #     cv2.FONT_HERSHEY_COMPLEX,
-                #     1,
-                #     (255, 0, 0),
-                #     2,
-                #     cv2.LINE_AA,
-                # )
-
-                decoded_data, rect_pts = scanQr(img=img)  # type: ignore
-                if str(decoded_data) != "None":
+                if pred_prob > max_pred_prob:
+                    max_pred_prob = pred_prob
                     found_status = "true"
-                    user_info = f"{decoded_data}"
-                    qr_coordinates = f"{rect_pts}"
-                    return img_rgb, user_info, found_status, coordinates, qr_coordinates
+                    coordinates = [x, w, y, h]
+                    # cv2.rectangle(img_rgb, (x, y), (x + w, y + h), (255, 0, 0), 5)
+                    # cv2.putText(
+                    #     img_rgb,
+                    #     "parcel",
+                    #     (x + MARGIN, y + MARGIN),
+                    #     cv2.FONT_HERSHEY_COMPLEX,
+                    #     1,
+                    #     (255, 0, 0),
+                    #     2,
+                    #     cv2.LINE_AA,
+                    # )
+
+                    return found_status, coordinates
+                else:
+                    pass
         else:
             found_status = "false"
 
-    return img_rgb, user_info, found_status, coordinates, qr_coordinates
+    max_pred_prob = 0
+    return found_status, coordinates
     # cv2.imshow("frame", cv2.cvtColor(img_rgb, cv2.COLOR_BGR2RGB))
     # if cv2.waitKey(1) == ord("q"):
     #     break

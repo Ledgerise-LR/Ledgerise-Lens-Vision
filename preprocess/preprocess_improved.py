@@ -7,23 +7,37 @@ from .utils.draw_corners import draw_corners
 
 
 def preprocessv2(img):
-    sat = cv2.cvtColor(img, cv2.COLOR_RGB2HSV)[:, :, 1]
+    sat = cv2.cvtColor(img, cv2.COLOR_BGR2HSV)[:, :, 1]
+    # sat = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
 
-    _, thresh = cv2.threshold(sat, 90, 255, 0)
+    sat = cv2.equalizeHist(sat)
 
-    OPEN_KERNEL, CLOSE_KERNEL = np.ones((7, 7), np.uint8), np.ones((13, 13), np.uint8)
+    # hist = cv2.calcHist([sat], [0], None, [256], [0, 256])
+
+    avg = np.median(np.median(sat, axis=0), axis=0)
+
+    _, thresh = cv2.threshold(sat, int(avg), 255, 0)
+
+    OPEN_KERNEL, CLOSE_KERNEL = np.zeros((20, 20), np.uint8), np.zeros((5, 5), np.uint8)
 
     morph = cv2.morphologyEx(thresh, cv2.MORPH_OPEN, OPEN_KERNEL)
     morph = cv2.morphologyEx(morph, cv2.MORPH_CLOSE, CLOSE_KERNEL)
 
-    rect_images_first_case = draw_contours(cv2.cvtColor(img, cv2.COLOR_BGR2RGB), morph)[
-        1
-    ]
-    rect_images_second_case = draw_contours(
+    (contour_image_first_case, rect_images_first_case) = draw_contours(
+        cv2.cvtColor(img, cv2.COLOR_BGR2RGB), morph
+    )
+    (contour_image_second_case, rect_images_second_case) = draw_contours(
         cv2.cvtColor(img, cv2.COLOR_BGR2RGB), cv2.bitwise_not(morph)
-    )[1]
+    )
 
-    # images = [img, sat, thresh, morph, rect_images_first_case, rect_images_second_case]
+    # images = [
+    #     img,
+    #     sat,
+    #     thresh,
+    #     morph,
+    #     contour_image_first_case,
+    #     contour_image_second_case,
+    # ]
     # titles = [
     #     "img",
     #     "sat",
