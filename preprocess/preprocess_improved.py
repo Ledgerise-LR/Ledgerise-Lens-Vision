@@ -16,7 +16,7 @@ def preprocessv2(img):
 
     avg = np.median(np.median(sat, axis=0), axis=0)
 
-    _, thresh = cv2.threshold(sat, int(avg), 255, 0)
+    _, thresh = cv2.threshold(sat, int(avg) + 10, 255, 0)
 
     OPEN_KERNEL, CLOSE_KERNEL = np.zeros((20, 20), np.uint8), np.zeros((5, 5), np.uint8)
 
