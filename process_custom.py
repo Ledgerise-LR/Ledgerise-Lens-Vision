@@ -32,8 +32,6 @@ transform = transforms.Compose(
 # cap = cv2.VideoCapture(0)
 # cap.set(cv2.CAP_PROP_FRAME_HEIGHT, cv2.CAP_PROP_FRAME_WIDTH)
 
-detector = cv2.QRCodeDetector()
-
 
 def process_custom(img):
     user_info = ""

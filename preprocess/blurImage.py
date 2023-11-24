@@ -1,7 +1,7 @@
 import cv2
 import numpy as np
 import matplotlib.pyplot as plt
-from utils.draw_contours import draw_contours
+from .utils.draw_contours import draw_contours
 
 # img = cv2.imread("./preprocess/data/blurImg.png")
 
@@ -27,7 +27,7 @@ def blurAidParcelBackground(img: np.ndarray) -> np.ndarray:
     cv2.rectangle(thresh, (x, y), (x + w, y + h), (255, 255, 255), -1)
     cv2.rectangle(contour_image, (x, y), (x + w, y + h), (255, 255, 255), -1)
 
-    blurred_img_rgb = cv2.GaussianBlur(contour_image, (39, 39), 10)
+    blurred_img_rgb = cv2.GaussianBlur(contour_image, (43, 43), 10)
     # print(rect_images_first_case)
 
     filter = cv2.bitwise_and(img_rgb, img_rgb, mask=thresh)

@@ -2,8 +2,8 @@ import cv2
 import numpy as np
 import matplotlib.pyplot as plt
 
-from utils.draw_contours import draw_contours
-from utils.draw_corners import draw_corners
+from .utils.draw_contours import draw_contours
+from .utils.draw_corners import draw_corners
 
 
 def preprocessv2(img):
@@ -34,31 +34,31 @@ def preprocessv2(img):
         cv2.cvtColor(img, cv2.COLOR_BGR2RGB), cv2.bitwise_not(morph)
     )
 
-    images = [
-        img,
-        sat,
-        thresh,
-        morph,
-        contour_image_first_case,
-        contour_image_second_case,
-    ]
-    titles = [
-        "img",
-        "sat",
-        "thresh",
-        "morph",
-        "rect_images_first_case",
-        "rect_images_second_case",
-    ]
+    # images = [
+    #     img,
+    #     sat,
+    #     thresh,
+    #     morph,
+    #     contour_image_first_case,
+    #     contour_image_second_case,
+    # ]
+    # titles = [
+    #     "img",
+    #     "sat",
+    #     "thresh",
+    #     "morph",
+    #     "rect_images_first_case",
+    #     "rect_images_second_case",
+    # ]
 
-    plt.figure(figsize=(10, 7))
-    for i in range(len(images)):
-        plt.subplot(2, 3, i + 1)
-        plt.imshow(images[i])
-        plt.title(titles[i])
-        plt.axis("off")
+    # plt.figure(figsize=(10, 7))
+    # for i in range(len(images)):
+    #     plt.subplot(2, 3, i + 1)
+    #     plt.imshow(images[i])
+    #     plt.title(titles[i])
+    #     plt.axis("off")
 
-    plt.show()
+    # plt.show()
 
     return [
         rect_images_first_case + rect_images_second_case,
@@ -66,5 +66,5 @@ def preprocessv2(img):
     ]
 
 
-img = cv2.imread("./preprocess/data/img8.png")
-preprocessv2(img)
+# img = cv2.imread("./preprocess/data/img8.png")
+# preprocessv2(img)
