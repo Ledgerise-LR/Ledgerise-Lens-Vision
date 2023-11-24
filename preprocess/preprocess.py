@@ -2,14 +2,15 @@ import cv2
 import numpy as np
 import matplotlib.pyplot as plt
 
-from utils.draw_contours import draw_contours
-from utils.draw_corners import draw_corners
+from .utils.draw_contours import draw_contours
+from .utils.draw_corners import draw_corners
 
 
-def preprocess():
-    img_read = cv2.imread("./preprocess/data/img3.png", cv2.IMREAD_UNCHANGED)
-    img_rgb = cv2.cvtColor(img_read, cv2.COLOR_BGR2RGB)
-    img = cv2.imread("./preprocess/data/img3.png", cv2.IMREAD_GRAYSCALE)
+def preprocess(img):
+    # img_read = cv2.imread("./preprocess/data/img3.png", cv2.IMREAD_UNCHANGED)
+    img_rgb = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
+    # img = cv2.imread("./preprocess/data/img3.png", cv2.IMREAD_GRAYSCALE)
+    img = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
     canny = cv2.Canny(img, 127, 255)
     _, th1 = cv2.threshold(img, 70, 255, cv2.THRESH_BINARY)
     th2 = cv2.adaptiveThreshold(
@@ -88,8 +89,8 @@ def preprocess():
     blurred_out_x = cv2.GaussianBlur(noise_reduction_image, (1, 1), 0)
     blurred_out_y = cv2.GaussianBlur(noise_reduction_image, (1, 1), 0)
 
-    CLOSE_RECT = 2
-    OPEN_RECT = 25
+    CLOSE_RECT = 1
+    OPEN_RECT = 15
 
     se1_x = cv2.getStructuringElement(cv2.MORPH_RECT, (CLOSE_RECT, CLOSE_RECT))
     se2_x = cv2.getStructuringElement(cv2.MORPH_RECT, (OPEN_RECT, OPEN_RECT))
@@ -119,59 +120,64 @@ def preprocess():
     out_final = cv2.cvtColor(np.uint8(out_final), cv2.COLOR_RGB2GRAY)
     _, out_final = cv2.threshold(out_final, 0, 255, cv2.THRESH_BINARY)
 
-    images = [
-        img,
-        # canny,
-        # th1,
-        # th2,
-        # th3,
-        # adjusted,
-        # th_adjusted,
-        # canny_adjusted,
-        # black_mask_adjusted_treshold,
-        # bordered_mask_adjusted_treshold,
-        bordered_mask_adjusted_treshold_canny,
-        # blurred,
-        # median_filtered,
-        noise_reduction_image,
-        cv2.bitwise_not(noise_reduction_image),
-        out_x,
-        out_y,
-        draw_contours(img_rgb, cv2.bitwise_not(out_final))[0],
+    # images = [
+    #     img,
+    #     # canny,
+    #     # th1,
+    #     # th2,
+    #     # th3,
+    #     # adjusted,
+    #     # th_adjusted,
+    #     # canny_adjusted,
+    #     # black_mask_adjusted_treshold,
+    #     # bordered_mask_adjusted_treshold,
+    #     bordered_mask_adjusted_treshold_canny,
+    #     # blurred,
+    #     # median_filtered,
+    #     noise_reduction_image,
+    #     cv2.bitwise_not(noise_reduction_image),
+    #     out_x,
+    #     out_y,
+    #     draw_contours(img_rgb, cv2.bitwise_not(out_final))[0],
+    # ]
+    # titles = [
+    #     "image",
+    #     # "canny",
+    #     # "th1",
+    #     # "th2",
+    #     # "th3",
+    #     # "Adjusted",
+    #     # "th_adjusted",  # black mask
+    #     # "canny_adjusted",
+    #     # "black_mask_adjusted_treshold",
+    #     # "bordered_mask_adjusted_treshold",
+    #     "canny",
+    #     # "blurred",
+    #     # "median_filtered",
+    #     "final",
+    #     "not",
+    #     "out_x",
+    #     "out_y",
+    #     "out_final",
+    # ]
+
+    # plt.figure(figsize=(15, 10))
+    # for i in range(len(images)):
+    #     plt.subplot(3, 3, i + 1)
+    #     plt.title(titles[i])
+    #     plt.imshow(images[i], cmap="gray")
+    #     plt.axis("off")
+
+    # plt.show()
+
+    (contour_image_first_case, rect_images_first_case) = draw_contours(
+        cv2.cvtColor(img, cv2.COLOR_BGR2RGB), out_final
+    )
+    (contour_image_second_case, rect_images_second_case) = draw_contours(
+        cv2.cvtColor(img, cv2.COLOR_BGR2RGB), cv2.bitwise_not(out_final)
+    )
+
+    return [
+        rect_images_first_case + rect_images_second_case,
+        cv2.cvtColor(out_final, cv2.COLOR_BGR2RGB),
     ]
-    titles = [
-        "image",
-        # "canny",
-        # "th1",
-        # "th2",
-        # "th3",
-        # "Adjusted",
-        # "th_adjusted",  # black mask
-        # "canny_adjusted",
-        # "black_mask_adjusted_treshold",
-        # "bordered_mask_adjusted_treshold",
-        "canny",
-        # "blurred",
-        # "median_filtered",
-        "final",
-        "not",
-        "out_x",
-        "out_y",
-        "out_final",
-    ]
-
-    plt.figure(figsize=(15, 10))
-    for i in range(len(images)):
-        plt.subplot(3, 3, i + 1)
-        plt.title(titles[i])
-        plt.imshow(images[i], cmap="gray")
-        plt.axis("off")
-
-    plt.show()
-
-    results = [draw_contours(img_rgb, cv2.bitwise_not(out_final))[1], img_rgb]
-
-    return results
-
-
-preprocess()

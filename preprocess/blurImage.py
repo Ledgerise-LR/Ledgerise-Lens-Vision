@@ -3,34 +3,38 @@ import numpy as np
 import matplotlib.pyplot as plt
 from utils.draw_contours import draw_contours
 
-img = cv2.imread("./preprocess/data/blurImg.png")
-img_rgb = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
+# img = cv2.imread("./preprocess/data/blurImg.png")
 
-img_hsv = cv2.cvtColor(img, cv2.COLOR_BGR2HSV)
 
-mask_green = cv2.inRange(img_hsv, (36, 25, 25), (70, 255, 255))
+def blurAidParcelBackground(img: np.ndarray) -> np.ndarray:
+    img_rgb = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
 
-imask_green = mask_green > 0
-green = np.zeros_like(img, np.uint8)
-green[imask_green] = img[imask_green]
+    img_hsv = cv2.cvtColor(img, cv2.COLOR_BGR2HSV)
 
-green_mask_grey = cv2.cvtColor(green, cv2.COLOR_BGR2GRAY)
-_, thresh = cv2.threshold(green_mask_grey, 10, 255, cv2.THRESH_BINARY)
+    mask_green = cv2.inRange(img_hsv, (36, 25, 25), (70, 255, 255))  # type: ignore
 
-(contour_image, rect_images_first_case) = draw_contours(img, thresh)
+    imask_green = mask_green > 0
+    green = np.zeros_like(img, np.uint8)
+    green[imask_green] = img[imask_green]
 
-x, y, w, h = rect_images_first_case[0]
+    green_mask_grey = cv2.cvtColor(green, cv2.COLOR_BGR2GRAY)
+    _, thresh = cv2.threshold(green_mask_grey, 10, 255, cv2.THRESH_BINARY)
 
-cv2.rectangle(thresh, (x, y), (x + w, y + h), (255, 255, 255), -1)
-cv2.rectangle(contour_image, (x, y), (x + w, y + h), (255, 255, 255), -1)
+    (contour_image, rect_images_first_case) = draw_contours(img, thresh)
 
-blurred_img_rgb = cv2.GaussianBlur(contour_image, (39, 39), 10)
-# print(rect_images_first_case)
+    x, y, w, h = rect_images_first_case[0]
 
-filter = cv2.bitwise_and(img_rgb, img_rgb, mask=thresh)
-filter = cv2.cvtColor(filter, cv2.COLOR_BGR2RGB)
+    cv2.rectangle(thresh, (x, y), (x + w, y + h), (255, 255, 255), -1)
+    cv2.rectangle(contour_image, (x, y), (x + w, y + h), (255, 255, 255), -1)
 
-blurred_img_rgb[y : y + h, x : x + w] = filter[y : y + h, x : x + w]
+    blurred_img_rgb = cv2.GaussianBlur(contour_image, (39, 39), 10)
+    # print(rect_images_first_case)
 
-cv2.imshow("res", blurred_img_rgb)
-cv2.waitKey()
+    filter = cv2.bitwise_and(img_rgb, img_rgb, mask=thresh)
+    filter = cv2.cvtColor(filter, cv2.COLOR_BGR2RGB)
+
+    blurred_img_rgb[y : y + h, x : x + w] = filter[y : y + h, x : x + w]
+
+    res = blurred_img_rgb
+
+    return res
