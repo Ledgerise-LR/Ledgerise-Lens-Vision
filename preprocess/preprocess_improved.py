@@ -20,9 +20,12 @@ def preprocessv2(img):
 
     avg = np.median(np.median(sat, axis=0), axis=0)
 
-    _, thresh = cv2.threshold(sat, int(avg) * 0.96, 255, cv2.THRESH_BINARY)
+    _, thresh_down = cv2.threshold(sat, int(avg) * 0.8, 255, cv2.THRESH_BINARY)
+    _, thresh_up = cv2.threshold(sat, int(avg) * 1.2, 255, cv2.THRESH_BINARY)
 
-    OPEN_KERNEL, CLOSE_KERNEL = np.zeros((3, 3), np.uint8), np.ones((40, 40), np.uint8)
+    thresh = cv2.bitwise_and(thresh_up, thresh_down)
+
+    OPEN_KERNEL, CLOSE_KERNEL = np.zeros((2, 2), np.uint8), np.ones((25, 25), np.uint8)
 
     morph = cv2.morphologyEx(thresh, cv2.MORPH_OPEN, OPEN_KERNEL)
     morph = cv2.morphologyEx(morph, cv2.MORPH_CLOSE, CLOSE_KERNEL)
@@ -33,6 +36,58 @@ def preprocessv2(img):
     (contour_image_second_case, rect_images_second_case) = draw_contours(
         cv2.cvtColor(img, cv2.COLOR_BGR2RGB), cv2.bitwise_not(morph)
     )
+
+    for i in rect_images_first_case:
+        x, y, w, h = i[0], i[1], i[2], i[3]
+        rect_img = sat[y : y + h, x : x + w]
+
+        avg = np.median(np.median(rect_img, axis=0), axis=0)
+
+        _, thresh_down = cv2.threshold(rect_img, int(avg) * 0.8, 255, cv2.THRESH_BINARY)
+        _, thresh_up = cv2.threshold(rect_img, int(avg) * 1.2, 255, cv2.THRESH_BINARY)
+
+        thresh = cv2.bitwise_and(thresh_up, thresh_down)
+        OPEN_KERNEL, CLOSE_KERNEL = np.zeros((2, 2), np.uint8), np.ones(
+            (25, 25), np.uint8
+        )
+
+        morph = cv2.morphologyEx(thresh, cv2.MORPH_OPEN, OPEN_KERNEL)
+        morph = cv2.morphologyEx(morph, cv2.MORPH_CLOSE, CLOSE_KERNEL)
+
+        (contour_image_first_case, rect_rect_images_first_case) = draw_contours(
+            cv2.cvtColor(rect_img, cv2.COLOR_BGR2RGB), morph
+        )
+        (contour_image_second_case, rect_rect_images_second_case) = draw_contours(
+            cv2.cvtColor(rect_img, cv2.COLOR_BGR2RGB), cv2.bitwise_not(morph)
+        )
+
+        i = rect_rect_images_first_case + rect_rect_images_second_case
+
+    for i in rect_images_second_case:
+        x, y, w, h = i[0], i[1], i[2], i[3]
+        rect_img = sat[y : y + h, x : x + w]
+
+        avg = np.median(np.median(rect_img, axis=0), axis=0)
+
+        _, thresh_down = cv2.threshold(rect_img, int(avg) * 0.8, 255, cv2.THRESH_BINARY)
+        _, thresh_up = cv2.threshold(rect_img, int(avg) * 1.2, 255, cv2.THRESH_BINARY)
+
+        thresh = cv2.bitwise_and(thresh_up, thresh_down)
+        OPEN_KERNEL, CLOSE_KERNEL = np.zeros((2, 2), np.uint8), np.ones(
+            (25, 25), np.uint8
+        )
+
+        morph = cv2.morphologyEx(thresh, cv2.MORPH_OPEN, OPEN_KERNEL)
+        morph = cv2.morphologyEx(morph, cv2.MORPH_CLOSE, CLOSE_KERNEL)
+
+        (contour_image_first_case, rect_rect_images_first_case) = draw_contours(
+            cv2.cvtColor(rect_img, cv2.COLOR_BGR2RGB), morph
+        )
+        (contour_image_second_case, rect_rect_images_second_case) = draw_contours(
+            cv2.cvtColor(rect_img, cv2.COLOR_BGR2RGB), cv2.bitwise_not(morph)
+        )
+
+        i = rect_rect_images_first_case + rect_rect_images_second_case
 
     # images = [
     #     img,
