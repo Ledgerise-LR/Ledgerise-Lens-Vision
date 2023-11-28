@@ -80,6 +80,7 @@ def process_custom(img):
                 pass
             else:
                 if pred_prob > max_pred_prob:
+                    print(pred_prob)
                     max_pred_prob = pred_prob
                     found_status = "true"
                     coordinates = [x, w, y, h]
@@ -94,8 +95,6 @@ def process_custom(img):
                     #     2,
                     #     cv2.LINE_AA,
                     # )
-
-                    return found_status, coordinates
                 else:
                     pass
         else:
