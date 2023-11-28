@@ -89,7 +89,7 @@ def preprocessv2(img):
         for i in rect_rect_images_second_case:
             rect_images_second_case.append(i)
 
-    print(rect_images_first_case + rect_images_second_case)
+    # print(rect_images_first_case + rect_images_second_case)
 
     # images = [
     #     img,
