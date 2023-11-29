@@ -3,7 +3,7 @@ import matplotlib.pyplot as plt
 from pprint import pprint
 
 
-def draw_contours(img, ext):
+def draw_contours(img, ext, relx, rely):
     # Find contours in the grayscale image
     contours, hierarchy = cv2.findContours(
         ext, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE
@@ -30,7 +30,7 @@ def draw_contours(img, ext):
             min_y, max_y = min(y, min_y), max(y + h, max_y)
             # cv2.rectangle(contour_image, (x, y), (x + w, y + h), (0, 255, 0), 10)
             extracted_rectangle = img[y : y + h, x : x + w]
-            rectangle_images.append(list([x, y, w, h]))
+            rectangle_images.append(list([x + relx, y + rely, w, h]))
 
     if max_x - min_x > 0 and max_y - min_y > 0:
         pass

@@ -20,7 +20,7 @@ def blurAidParcelBackground(img: np.ndarray) -> np.ndarray:
     green_mask_grey = cv2.cvtColor(green, cv2.COLOR_BGR2GRAY)
     _, thresh = cv2.threshold(green_mask_grey, 10, 255, cv2.THRESH_BINARY)
 
-    (contour_image, rect_images_first_case) = draw_contours(img, thresh)
+    (contour_image, rect_images_first_case) = draw_contours(img, thresh, 0, 0)
 
     x, y, w, h = rect_images_first_case[0]
 

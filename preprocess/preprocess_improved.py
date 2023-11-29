@@ -20,21 +20,21 @@ def preprocessv2(img):
 
     avg = np.median(np.median(sat, axis=0), axis=0)
 
-    _, thresh_down = cv2.threshold(sat, int(avg) * 0.9, 255, cv2.THRESH_BINARY)
-    _, thresh_up = cv2.threshold(sat, int(avg) * 1.1, 255, cv2.THRESH_BINARY)
+    _, thresh_down = cv2.threshold(sat, int(avg) * 0.8, 255, cv2.THRESH_BINARY)
+    _, thresh_up = cv2.threshold(sat, int(avg) * 1.2, 255, cv2.THRESH_BINARY)
 
     thresh = cv2.bitwise_or(thresh_up, thresh_down)
 
-    OPEN_KERNEL, CLOSE_KERNEL = np.zeros((3, 3), np.uint8), np.ones((20, 20), np.uint8)
+    OPEN_KERNEL, CLOSE_KERNEL = np.zeros((3, 3), np.uint8), np.ones((30, 30), np.uint8)
 
     morph = cv2.morphologyEx(thresh, cv2.MORPH_OPEN, OPEN_KERNEL)
     morph = cv2.morphologyEx(morph, cv2.MORPH_CLOSE, CLOSE_KERNEL)
 
     (contour_image_first_case, rect_images_first_case) = draw_contours(
-        cv2.cvtColor(img, cv2.COLOR_BGR2RGB), morph
+        cv2.cvtColor(img, cv2.COLOR_BGR2RGB), morph, 0, 0
     )
     (contour_image_second_case, rect_images_second_case) = draw_contours(
-        cv2.cvtColor(img, cv2.COLOR_BGR2RGB), cv2.bitwise_not(morph)
+        cv2.cvtColor(img, cv2.COLOR_BGR2RGB), cv2.bitwise_not(morph), 0, 0
     )
 
     for i in range(len(rect_images_first_case)):
@@ -52,10 +52,10 @@ def preprocessv2(img):
         morph = cv2.morphologyEx(morph, cv2.MORPH_CLOSE, CLOSE_KERNEL)
 
         (contour_image_first_case, rect_rect_images_first_case) = draw_contours(
-            cv2.cvtColor(rect_img, cv2.COLOR_BGR2RGB), morph
+            cv2.cvtColor(rect_img, cv2.COLOR_BGR2RGB), morph, x, y
         )
         (contour_image_second_case, rect_rect_images_second_case) = draw_contours(
-            cv2.cvtColor(rect_img, cv2.COLOR_BGR2RGB), cv2.bitwise_not(morph)
+            cv2.cvtColor(rect_img, cv2.COLOR_BGR2RGB), cv2.bitwise_not(morph), x, y
         )
 
         for i in rect_rect_images_first_case:
@@ -78,10 +78,10 @@ def preprocessv2(img):
         morph = cv2.morphologyEx(morph, cv2.MORPH_CLOSE, CLOSE_KERNEL)
 
         (contour_image_first_case, rect_rect_images_first_case) = draw_contours(
-            cv2.cvtColor(rect_img, cv2.COLOR_BGR2RGB), morph
+            cv2.cvtColor(rect_img, cv2.COLOR_BGR2RGB), morph, x, y
         )
         (contour_image_second_case, rect_rect_images_second_case) = draw_contours(
-            cv2.cvtColor(rect_img, cv2.COLOR_BGR2RGB), cv2.bitwise_not(morph)
+            cv2.cvtColor(rect_img, cv2.COLOR_BGR2RGB), cv2.bitwise_not(morph), x, y
         )
 
         for i in rect_rect_images_first_case:
