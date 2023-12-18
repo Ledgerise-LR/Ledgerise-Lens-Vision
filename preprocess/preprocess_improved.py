@@ -5,10 +5,15 @@ import matplotlib.pyplot as plt
 from .utils.draw_contours import draw_contours
 from .utils.draw_corners import draw_corners
 
+contour_image_third_case = []
+contour_image_fourth_case = []
+contour_image_fifth_case = []
+contour_image_sixth_case = []
+
 
 def preprocessv2(img):
     alpha = 1.2
-    beta = 10
+    beta = 20
     adjusted = cv2.convertScaleAbs(img, alpha=alpha, beta=beta)
 
     sat = cv2.cvtColor(adjusted, cv2.COLOR_BGR2HSV)[:, :, 1]
@@ -20,12 +25,9 @@ def preprocessv2(img):
 
     avg = np.median(np.median(sat, axis=0), axis=0)
 
-    _, thresh_down = cv2.threshold(sat, int(avg) * 0.8, 255, cv2.THRESH_BINARY)
-    _, thresh_up = cv2.threshold(sat, int(avg) * 1.2, 255, cv2.THRESH_BINARY)
+    _, thresh = cv2.threshold(sat, avg, 255, cv2.THRESH_BINARY)
 
-    thresh = cv2.bitwise_or(thresh_up, thresh_down)
-
-    OPEN_KERNEL, CLOSE_KERNEL = np.zeros((3, 3), np.uint8), np.ones((30, 30), np.uint8)
+    OPEN_KERNEL, CLOSE_KERNEL = np.zeros((1, 1), np.uint8), np.ones((30, 30), np.uint8)
 
     morph = cv2.morphologyEx(thresh, cv2.MORPH_OPEN, OPEN_KERNEL)
     morph = cv2.morphologyEx(morph, cv2.MORPH_CLOSE, CLOSE_KERNEL)
@@ -41,25 +43,31 @@ def preprocessv2(img):
         x, y, w, h = rect_images_first_case[i]
         rect_img = sat[y : y + h, x : x + w]
 
+        sat_avg = np.mean(np.mean(sat, axis=0), axis=0)
         avg = np.median(np.median(rect_img, axis=0), axis=0)
 
-        _, thresh = cv2.threshold(rect_img, int(avg), 255, cv2.THRESH_BINARY)
-        OPEN_KERNEL, CLOSE_KERNEL = np.zeros((2, 2), np.uint8), np.ones(
-            (10, 10), np.uint8
+        # print(avg, sat_avg)
+
+        border = 180 if avg > sat_avg else 60
+
+        _, thresh = cv2.threshold(rect_img, border, 255, cv2.THRESH_BINARY)
+        OPEN_KERNEL, CLOSE_KERNEL = np.zeros((1, 1), np.uint8), np.ones(
+            (30, 30), np.uint8
         )
 
         morph = cv2.morphologyEx(thresh, cv2.MORPH_OPEN, OPEN_KERNEL)
         morph = cv2.morphologyEx(morph, cv2.MORPH_CLOSE, CLOSE_KERNEL)
 
-        (contour_image_first_case, rect_rect_images_first_case) = draw_contours(
-            cv2.cvtColor(rect_img, cv2.COLOR_BGR2RGB), morph, x, y
+        (contour_image_third_case, rect_rect_images_first_case) = draw_contours(
+            cv2.cvtColor(img, cv2.COLOR_BGR2RGB), morph, x, y
         )
-        (contour_image_second_case, rect_rect_images_second_case) = draw_contours(
-            cv2.cvtColor(rect_img, cv2.COLOR_BGR2RGB), cv2.bitwise_not(morph), x, y
+        (contour_image_fourth_case, rect_rect_images_second_case) = draw_contours(
+            cv2.cvtColor(img, cv2.COLOR_BGR2RGB), cv2.bitwise_not(morph), x, y
         )
 
         for i in rect_rect_images_first_case:
             rect_images_first_case.append(i)
+
         for i in rect_rect_images_second_case:
             rect_images_first_case.append(i)
 
@@ -67,21 +75,26 @@ def preprocessv2(img):
         x, y, w, h = rect_images_second_case[i]
         rect_img = sat[y : y + h, x : x + w]
 
+        sat_avg = np.mean(np.mean(sat, axis=0), axis=0)
         avg = np.median(np.median(rect_img, axis=0), axis=0)
 
-        _, thresh = cv2.threshold(rect_img, int(avg), 255, cv2.THRESH_BINARY)
-        OPEN_KERNEL, CLOSE_KERNEL = np.zeros((3, 3), np.uint8), np.ones(
-            (10, 10), np.uint8
+        # print(avg, sat_avg)
+
+        border = 180 if avg > sat_avg else 60
+
+        _, thresh = cv2.threshold(rect_img, border, 255, cv2.THRESH_BINARY)
+        OPEN_KERNEL, CLOSE_KERNEL = np.zeros((1, 1), np.uint8), np.ones(
+            (30, 30), np.uint8
         )
 
         morph = cv2.morphologyEx(thresh, cv2.MORPH_OPEN, OPEN_KERNEL)
         morph = cv2.morphologyEx(morph, cv2.MORPH_CLOSE, CLOSE_KERNEL)
 
-        (contour_image_first_case, rect_rect_images_first_case) = draw_contours(
-            cv2.cvtColor(rect_img, cv2.COLOR_BGR2RGB), morph, x, y
+        (contour_image_fifth_case, rect_rect_images_first_case) = draw_contours(
+            cv2.cvtColor(img, cv2.COLOR_BGR2RGB), morph, x, y
         )
-        (contour_image_second_case, rect_rect_images_second_case) = draw_contours(
-            cv2.cvtColor(rect_img, cv2.COLOR_BGR2RGB), cv2.bitwise_not(morph), x, y
+        (contour_image_sixth_case, rect_rect_images_second_case) = draw_contours(
+            cv2.cvtColor(img, cv2.COLOR_BGR2RGB), cv2.bitwise_not(morph), x, y
         )
 
         for i in rect_rect_images_first_case:
@@ -98,6 +111,10 @@ def preprocessv2(img):
     #     morph,
     #     contour_image_first_case,
     #     contour_image_second_case,
+    #     contour_image_third_case,
+    #     contour_image_fourth_case,
+    #     contour_image_fifth_case,
+    #     contour_image_sixth_case,
     # ]
     # titles = [
     #     "img",
@@ -106,11 +123,15 @@ def preprocessv2(img):
     #     "morph",
     #     "rect_images_first_case",
     #     "rect_images_second_case",
+    #     "rect_images_third_case",
+    #     "rect_images_fourth_case",
+    #     "rect_images_fifth_case",
+    #     "rect_images_sixth_case",
     # ]
 
     # plt.figure(figsize=(10, 7))
     # for i in range(len(images)):
-    #     plt.subplot(2, 3, i + 1)
+    #     plt.subplot(2, 5, i + 1)
     #     plt.imshow(images[i])
     #     plt.title(titles[i])
     #     plt.axis("off")
@@ -121,3 +142,7 @@ def preprocessv2(img):
         (rect_images_first_case + rect_images_second_case),
         cv2.cvtColor(img, cv2.COLOR_BGR2RGB),
     ]
+
+
+# img = cv2.imread("./preprocess/data/img14.png")
+# preprocessv2(img)
