@@ -4,7 +4,7 @@ import json
 from detect import processImage
 from getBlur import getBlur
 
-hostName = "localhost"
+hostName = "lens-ledgerise"
 serverPort = 8080
 
 
