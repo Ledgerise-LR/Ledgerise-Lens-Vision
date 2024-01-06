@@ -79,7 +79,11 @@ def process_custom(img):
             ):
                 pass
             else:
-                if pred_prob > max_pred_prob and h <= img_rgb.shape[1] / 1.1:
+                if (
+                    pred_prob > max_pred_prob
+                    and h <= img_rgb.shape[1] * 0.75
+                    and h >= img_rgb.shape[1] * 0.25
+                ):
                     max_pred_prob = pred_prob
                     found_status = "true"
                     coordinates = [x, w, y, h]

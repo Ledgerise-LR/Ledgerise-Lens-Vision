@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Image Upload</title>
+</head>
+<body>
+    <h2>Upload Image</h2>
+    <form id="imageUploadForm">
+        <label for="imageInput">Select Image:</label>
+        <input type="file" id="imageInput" accept="image/*">
+        <br>
+        <button type="button" onclick="uploadImage()">Upload</button>
+    </form>
+
+    <script>
+        function uploadImage() {
+            const imageInput = document.getElementById('imageInput');
+
+            const file = imageInput.files[0];
+            if (!file) {
+                alert('Please select an image.');
+                return;
+            }
+
+            const reader = new FileReader();
+            reader.onload = function (event) {
+                const base64Image = event.target.result.split(',')[1];
+
+                fetch('http://localhost:8080/real-time', {
+                    method: 'POST',
+                    body: JSON.stringify({
+                      image: base64Image
+                    }),
+                    headers: {
+                    'Content-Type': 'application/json'
+                    },
+                })
+                .then(response => response.json())
+                .then(data => {
+                  console.log(data)
+                })
+            };
+
+            reader.readAsDataURL(file);
+        }
+    </script>
+</body>
+</html>

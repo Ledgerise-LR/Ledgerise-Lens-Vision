@@ -19,7 +19,7 @@ image_array = np.frombuffer(response.content, dtype=np.uint8)
 
 image = cv2.imdecode(image_array, cv2.IMREAD_COLOR)
 
-# image = cv2.imread("./preprocess/data/img14.png")
+# image = cv2.imread("./preprocess/data/img15.png")
 
 if image is not None:
     found_status, coordinates = process_custom(image)

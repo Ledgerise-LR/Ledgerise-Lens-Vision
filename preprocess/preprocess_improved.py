@@ -25,9 +25,9 @@ def preprocessv2(img):
 
     avg = np.median(np.median(sat, axis=0), axis=0)
 
-    _, thresh = cv2.threshold(sat, avg, 255, cv2.THRESH_BINARY)
+    _, thresh = cv2.threshold(sat, 127, 255, cv2.THRESH_BINARY)
 
-    OPEN_KERNEL, CLOSE_KERNEL = np.zeros((1, 1), np.uint8), np.ones((30, 30), np.uint8)
+    OPEN_KERNEL, CLOSE_KERNEL = np.zeros((3, 3), np.uint8), np.ones((30, 30), np.uint8)
 
     morph = cv2.morphologyEx(thresh, cv2.MORPH_OPEN, OPEN_KERNEL)
     morph = cv2.morphologyEx(morph, cv2.MORPH_CLOSE, CLOSE_KERNEL)
@@ -39,20 +39,28 @@ def preprocessv2(img):
         cv2.cvtColor(img, cv2.COLOR_BGR2RGB), cv2.bitwise_not(morph), 0, 0
     )
 
+    total_rect_images = []
+
     for i in range(len(rect_images_first_case)):
-        x, y, w, h = rect_images_first_case[i]
+        total_rect_images.append(rect_images_first_case[i])
+
+    for i in range(len(rect_images_second_case)):
+        total_rect_images.append(rect_images_second_case[i])
+
+    for i in range(len(total_rect_images)):
+        x, y, w, h = total_rect_images[i]
         rect_img = sat[y : y + h, x : x + w]
 
-        sat_avg = np.mean(np.mean(sat, axis=0), axis=0)
+        sat_avg = np.median(np.median(sat, axis=0), axis=0)
         avg = np.median(np.median(rect_img, axis=0), axis=0)
 
         # print(avg, sat_avg)
 
-        border = 180 if avg > sat_avg else 60
+        border = 190 if avg > sat_avg else 60
 
-        _, thresh = cv2.threshold(rect_img, border, 255, cv2.THRESH_BINARY)
+        _, thresh = cv2.threshold(rect_img, 60, 255, cv2.THRESH_BINARY)
         OPEN_KERNEL, CLOSE_KERNEL = np.zeros((1, 1), np.uint8), np.ones(
-            (30, 30), np.uint8
+            (20, 20), np.uint8
         )
 
         morph = cv2.morphologyEx(thresh, cv2.MORPH_OPEN, OPEN_KERNEL)
@@ -66,25 +74,25 @@ def preprocessv2(img):
         )
 
         for i in rect_rect_images_first_case:
-            rect_images_first_case.append(i)
+            total_rect_images.append(i)
 
         for i in rect_rect_images_second_case:
-            rect_images_first_case.append(i)
+            total_rect_images.append(i)
 
-    for i in range(len(rect_images_second_case)):
-        x, y, w, h = rect_images_second_case[i]
+    for i in range(len(total_rect_images)):
+        x, y, w, h = total_rect_images[i]
         rect_img = sat[y : y + h, x : x + w]
 
-        sat_avg = np.mean(np.mean(sat, axis=0), axis=0)
+        sat_avg = np.median(np.median(sat, axis=0), axis=0)
         avg = np.median(np.median(rect_img, axis=0), axis=0)
 
         # print(avg, sat_avg)
 
-        border = 180 if avg > sat_avg else 60
+        border = 190 if avg > sat_avg else 60
 
-        _, thresh = cv2.threshold(rect_img, border, 255, cv2.THRESH_BINARY)
+        _, thresh = cv2.threshold(rect_img, 190, 255, cv2.THRESH_BINARY)
         OPEN_KERNEL, CLOSE_KERNEL = np.zeros((1, 1), np.uint8), np.ones(
-            (30, 30), np.uint8
+            (20, 20), np.uint8
         )
 
         morph = cv2.morphologyEx(thresh, cv2.MORPH_OPEN, OPEN_KERNEL)
@@ -98,9 +106,9 @@ def preprocessv2(img):
         )
 
         for i in rect_rect_images_first_case:
-            rect_images_second_case.append(i)
+            total_rect_images.append(i)
         for i in rect_rect_images_second_case:
-            rect_images_second_case.append(i)
+            total_rect_images.append(i)
 
     # print(rect_images_first_case + rect_images_second_case)
 
@@ -139,7 +147,7 @@ def preprocessv2(img):
     # plt.show()
 
     return [
-        (rect_images_first_case + rect_images_second_case),
+        (total_rect_images),
         cv2.cvtColor(img, cv2.COLOR_BGR2RGB),
     ]
 
