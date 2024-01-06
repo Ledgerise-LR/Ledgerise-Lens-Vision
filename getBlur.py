@@ -1,8 +1,6 @@
-import sys
 import cv2
 import numpy as np
 import base64
-import fileinput
 import requests
 
 import cv2

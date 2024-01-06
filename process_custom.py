@@ -6,9 +6,7 @@ from prediction import pred_and_plot_on_custom_data
 import model_builder
 import torch
 from torchvision import transforms
-import cv2
 from preprocess.preprocess_improved import preprocessv2
-from scanQrDemo import scanQr
 
 # from PIL import Image
 # from io import StringIO
