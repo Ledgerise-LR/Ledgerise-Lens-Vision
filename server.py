@@ -4,7 +4,7 @@ import json
 from detect import processImage
 from getBlur import getBlur
 
-hostName = "lens-ledgerise"
+hostName = "https://lens-ledgerise.onrender.com"
 serverPort = 8080
 
 
