@@ -18,7 +18,7 @@ model = model_builder.LedgeriseLens(
     input_channels=3, hidden_units=HIDDEN_UNITS, output_channels=len(class_names)
 )
 
-model.load_state_dict(torch.load(f="../LedgeriseLens-AI/models/LedgeriseLensV4.pth"))
+model.load_state_dict(torch.load(f="./models/LedgeriseLensV4.pth"))
 
 transform = transforms.Compose(
     [
