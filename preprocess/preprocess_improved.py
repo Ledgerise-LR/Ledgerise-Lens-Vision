@@ -23,11 +23,9 @@ def preprocessv2(img):
 
     # hist = cv2.calcHist([sat], [0], None, [256], [0, 256])
 
-    avg = np.median(np.median(sat, axis=0), axis=0)
-
     _, thresh = cv2.threshold(sat, 127, 255, cv2.THRESH_BINARY)
 
-    OPEN_KERNEL, CLOSE_KERNEL = np.zeros((3, 3), np.uint8), np.ones((30, 30), np.uint8)
+    OPEN_KERNEL, CLOSE_KERNEL = np.zeros((3, 3), np.uint8), np.ones((5, 5), np.uint8)
 
     morph = cv2.morphologyEx(thresh, cv2.MORPH_OPEN, OPEN_KERNEL)
     morph = cv2.morphologyEx(morph, cv2.MORPH_CLOSE, CLOSE_KERNEL)
@@ -51,16 +49,9 @@ def preprocessv2(img):
         x, y, w, h = total_rect_images[i]
         rect_img = sat[y : y + h, x : x + w]
 
-        sat_avg = np.median(np.median(sat, axis=0), axis=0)
-        avg = np.median(np.median(rect_img, axis=0), axis=0)
-
-        # print(avg, sat_avg)
-
-        border = 190 if avg > sat_avg else 60
-
-        _, thresh = cv2.threshold(rect_img, 60, 255, cv2.THRESH_BINARY)
+        _, thresh = cv2.threshold(rect_img, 40, 255, cv2.THRESH_BINARY)
         OPEN_KERNEL, CLOSE_KERNEL = np.zeros((1, 1), np.uint8), np.ones(
-            (20, 20), np.uint8
+            (5, 5), np.uint8
         )
 
         morph = cv2.morphologyEx(thresh, cv2.MORPH_OPEN, OPEN_KERNEL)
@@ -83,16 +74,9 @@ def preprocessv2(img):
         x, y, w, h = total_rect_images[i]
         rect_img = sat[y : y + h, x : x + w]
 
-        sat_avg = np.median(np.median(sat, axis=0), axis=0)
-        avg = np.median(np.median(rect_img, axis=0), axis=0)
-
-        # print(avg, sat_avg)
-
-        border = 190 if avg > sat_avg else 60
-
-        _, thresh = cv2.threshold(rect_img, 190, 255, cv2.THRESH_BINARY)
+        _, thresh = cv2.threshold(rect_img, 200, 255, cv2.THRESH_BINARY)
         OPEN_KERNEL, CLOSE_KERNEL = np.zeros((1, 1), np.uint8), np.ones(
-            (20, 20), np.uint8
+            (5, 5), np.uint8
         )
 
         morph = cv2.morphologyEx(thresh, cv2.MORPH_OPEN, OPEN_KERNEL)
@@ -152,5 +136,5 @@ def preprocessv2(img):
     ]
 
 
-# img = cv2.imread("./preprocess/data/img14.png")
+# img = cv2.imread("./preprocess/data/img16.png")
 # preprocessv2(img)

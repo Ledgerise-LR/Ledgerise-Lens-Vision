@@ -28,13 +28,13 @@ def draw_contours(img, ext, relx, rely):
             (x, y, w, h) = cv2.boundingRect(contour)
             min_x, max_x = min(x, min_x), max(x + w, max_x)
             min_y, max_y = min(y, min_y), max(y + h, max_y)
-            cv2.rectangle(
-                contour_image,
-                (x + relx, y + rely),
-                (x + relx + w, y + rely + h),
-                (0, 255, 0),
-                10,
-            )
+            # cv2.rectangle(
+            #     contour_image,
+            #     (x + relx, y + rely),
+            #     (x + relx + w, y + rely + h),
+            #     (0, 255, 0),
+            #     10,
+            # )
             extracted_rectangle = img[y : y + h, x : x + w]
             rectangle_images.append(list([x + relx, y + rely, w, h]))
 
