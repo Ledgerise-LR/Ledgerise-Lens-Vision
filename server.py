@@ -26,16 +26,29 @@ class MyServer(BaseHTTPRequestHandler):
         self.send_header("Access-Control-Allow-Headers", "Content-Type")
         self.end_headers()
 
+    def do_GET(self):
+        if self.path == "/test":
+            self.send_response(200)
+            self.send_header("Content-type", "application/json")
+            self.send_header("Access-Control-Allow-Origin", "*")
+            self.end_headers()
+            response = {"result": "initiator"}
+            self.wfile.write(json.dumps(response).encode("utf-8"))
+            return
+
     def do_POST(self):
         if self.path == "/real-time":
             content_type, params = cgi.parse_header(self.headers["content-type"])
 
+            print("first barrier")
             if content_type == "application/json":
+                print("second barrier")
                 content_length = int(self.headers["content-length"])
                 post_data = self.rfile.read(content_length)
                 post_data_dict = json.loads(post_data.decode("utf-8"))
 
                 if "image" in post_data_dict:
+                    print("third barrier")
                     base64_image = post_data_dict["image"]
                     result_json = process_image(base64_image)
 
