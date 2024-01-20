@@ -136,5 +136,5 @@ def preprocessv2(img):
     ]
 
 
-# img = cv2.imread("./preprocess/data/img16.png")
+# img = cv2.imread("./preprocess/data/img18.png")
 # preprocessv2(img)

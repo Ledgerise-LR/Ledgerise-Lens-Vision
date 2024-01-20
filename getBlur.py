@@ -14,7 +14,7 @@ def getBlur(tokenUri: str):
 
     image = cv2.imdecode(image_array, cv2.IMREAD_COLOR)
 
-    # image = cv2.imread("./preprocess/data/img16.png")
+    # image = cv2.imread("./preprocess/data/img18.png")
 
     if image is not None:
         found_status, coordinates = process_custom(image)

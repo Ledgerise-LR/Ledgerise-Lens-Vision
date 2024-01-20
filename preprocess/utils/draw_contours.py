@@ -12,14 +12,15 @@ def draw_contours(img, ext, relx, rely):
     rectangle_images = []
     contour_image = img.copy()
 
-    min_contour_area = 10000
-
     try:
         hierarchy = hierarchy[0]
     except:
         hierarchy = []
 
     height, width, _ = img.shape
+
+    min_contour_area = int((height * width) / 20)
+    
     min_x, min_y = width, height
     max_x = max_y = 0
 
