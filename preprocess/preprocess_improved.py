@@ -12,8 +12,8 @@ contour_image_sixth_case = []
 
 
 def preprocessv2(img):
-    alpha = 1.2
-    beta = 20
+    alpha = 1.5
+    beta = 30
     adjusted = cv2.convertScaleAbs(img, alpha=alpha, beta=beta)
 
     sat = cv2.cvtColor(adjusted, cv2.COLOR_BGR2HSV)[:, :, 1]
@@ -49,8 +49,8 @@ def preprocessv2(img):
         x, y, w, h = total_rect_images[i]
         rect_img = sat[y : y + h, x : x + w]
 
-        _, thresh = cv2.threshold(rect_img, 40, 255, cv2.THRESH_BINARY)
-        OPEN_KERNEL, CLOSE_KERNEL = np.zeros((1, 1), np.uint8), np.ones(
+        _, thresh = cv2.threshold(rect_img, 50, 255, cv2.THRESH_BINARY)
+        OPEN_KERNEL, CLOSE_KERNEL = np.zeros((3, 3), np.uint8), np.ones(
             (5, 5), np.uint8
         )
 
@@ -74,8 +74,8 @@ def preprocessv2(img):
         x, y, w, h = total_rect_images[i]
         rect_img = sat[y : y + h, x : x + w]
 
-        _, thresh = cv2.threshold(rect_img, 200, 255, cv2.THRESH_BINARY)
-        OPEN_KERNEL, CLOSE_KERNEL = np.zeros((1, 1), np.uint8), np.ones(
+        _, thresh = cv2.threshold(rect_img, 190, 255, cv2.THRESH_BINARY)
+        OPEN_KERNEL, CLOSE_KERNEL = np.zeros((3, 3), np.uint8), np.ones(
             (5, 5), np.uint8
         )
 
