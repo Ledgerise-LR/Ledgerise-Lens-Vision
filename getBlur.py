@@ -8,7 +8,7 @@ from preprocess.blurImage import blurAidParcelBackground
 from process_custom import process_custom
 
 
-def getBlur(tokenUri: str):
+def getBlur(tokenUri: str, bounds: object):
     response = requests.get(tokenUri)
     image_array = np.frombuffer(response.content, dtype=np.uint8)
 
@@ -17,11 +17,11 @@ def getBlur(tokenUri: str):
     # image = cv2.imread("./preprocess/data/img18.png")
 
     if image is not None:
-        found_status, coordinates = process_custom(image)
+        found_status, coordinates = process_custom(image, bounds)
 
         [x, w, y, h] = coordinates
         cv2.rectangle(image, (x, y), (x + w, y + h), (0, 255, 0), 5)
-        res_image: np.ndarray = blurAidParcelBackground(image)
+        res_image: np.ndarray = blurAidParcelBackground(image, bounds)
         res_image_base64 = base64.b64encode(cv2.imencode(".png", res_image)[1]).decode()  # type: ignore
 
         return {"image": res_image_base64}

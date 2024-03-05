@@ -6,7 +6,7 @@ from .utils.draw_contours import draw_contours
 # img = cv2.imread("./preprocess/data/blurImg.png")
 
 
-def blurAidParcelBackground(img: np.ndarray) -> np.ndarray:
+def blurAidParcelBackground(img: np.ndarray, bounds) -> np.ndarray:
     img_rgb = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
 
     img_hsv = cv2.cvtColor(img, cv2.COLOR_BGR2HSV)
@@ -36,5 +36,7 @@ def blurAidParcelBackground(img: np.ndarray) -> np.ndarray:
     blurred_img_rgb[y : y + h, x : x + w] = filter[y : y + h, x : x + w]
 
     res = blurred_img_rgb
+
+    cv2.circle(res, (int(bounds["x"]), int(bounds["y"])), 2, (0, 255, 0), 2)
 
     return res

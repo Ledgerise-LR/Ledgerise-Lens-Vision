@@ -9,7 +9,7 @@ import base64
 #     input += line.strip()
 
 
-def processImage(base64Input: str):
+def processImage(base64Input: str, bounds):
     image_data = base64.b64decode(base64Input)
 
     image_np_array = np.frombuffer(image_data, np.uint8)
@@ -18,7 +18,7 @@ def processImage(base64Input: str):
 
     if image is not None:
         # image = cv2.resize(image, (width, height), interpolation=cv2.INTER_AREA)
-        found_status, coordinates = process_custom(image)
+        found_status, coordinates = process_custom(image, bounds)
 
         results = {
             "coordinates_array": coordinates,

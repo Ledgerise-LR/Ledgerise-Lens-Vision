@@ -31,7 +31,7 @@ transform = transforms.Compose(
 # cap.set(cv2.CAP_PROP_FRAME_HEIGHT, cv2.CAP_PROP_FRAME_WIDTH)
 
 
-def process_custom(img):
+def process_custom(img, bounds):
     user_info = ""
     found_status = "false"
 
@@ -70,7 +70,7 @@ def process_custom(img):
             class_names=class_names,
         )
 
-        if pred_label == "parcel":
+        if pred_label == "parcel" and x < bounds["x"] and bounds["x"] < x + w and h < bounds["y"] and bounds["y"] < y + h:
             if (
                 rect_image.shape[0] == img_rgb.shape[0]
                 and rect_image.shape[1] == img_rgb.shape[1]

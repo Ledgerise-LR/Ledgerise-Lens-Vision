@@ -8,13 +8,13 @@ hostName = "0.0.0.0"
 serverPort = 8080
 
 
-def process_image(image_bytes):
-    result = processImage(image_bytes)
+def process_image(image_bytes, bounds):
+    result = processImage(image_bytes, bounds)
     return json.dumps(result)
 
 
-def get_blur(tokenUri):
-    result = getBlur(tokenUri)
+def get_blur(tokenUri, bounds):
+    result = getBlur(tokenUri, bounds)
     return json.dumps(result)
 
 
@@ -40,17 +40,15 @@ class MyServer(BaseHTTPRequestHandler):
         if self.path == "/real-time":
             content_type, params = cgi.parse_header(self.headers["content-type"])
 
-            print("first barrier")
             if content_type == "application/json":
-                print("second barrier")
                 content_length = int(self.headers["content-length"])
                 post_data = self.rfile.read(content_length)
                 post_data_dict = json.loads(post_data.decode("utf-8"))
 
                 if "image" in post_data_dict:
-                    print("third barrier")
                     base64_image = post_data_dict["image"]
-                    result_json = process_image(base64_image)
+                    bounds = post_data_dict["bounds"]
+                    result_json = process_image(base64_image, bounds)
 
                     self.send_response(200)
                     self.send_header("Content-type", "application/json")
@@ -68,7 +66,8 @@ class MyServer(BaseHTTPRequestHandler):
 
                 if "tokenUri" in post_data_dict:
                     tokenUri = post_data_dict["tokenUri"]
-                    result_json = get_blur(tokenUri)
+                    bounds = post_data_dict["bounds"]
+                    result_json = get_blur(tokenUri, bounds)
 
                     self.send_response(200)
                     self.send_header("Content-type", "application/json")
