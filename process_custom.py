@@ -70,7 +70,7 @@ def process_custom(img, bounds):
             class_names=class_names,
         )
 
-        if pred_label == "parcel" and x < bounds["x"] and bounds["x"] < x + w and h < bounds["y"] and bounds["y"] < y + h:
+        if pred_label == "parcel" and x < bounds["x"] and bounds["x"] < x + w and y < bounds["y"] and bounds["y"] < y + h:
             if (
                 rect_image.shape[0] == img_rgb.shape[0]
                 and rect_image.shape[1] == img_rgb.shape[1]
