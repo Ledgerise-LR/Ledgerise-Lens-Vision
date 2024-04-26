@@ -12,7 +12,7 @@ contour_image_sixth_case = []
 
 
 def preprocessv2(img):
-    alpha = 1.2
+    alpha = 1
     beta = 20
     adjusted = cv2.convertScaleAbs(img, alpha=alpha, beta=beta)
 
